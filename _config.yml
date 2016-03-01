@@ -19,3 +19,6 @@ markdown: kramdown
 
 # Google Analytics
 google_analytics_tracking_id: UA-68330-2
+
+gems:
+  - jekyll-sitemap
