@@ -16,3 +16,6 @@ github_username:  japj
 
 # Build settings
 markdown: kramdown
+
+# Google Analytics
+google_analytics_tracking_id: UA-68330-2
