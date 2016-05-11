@@ -7,15 +7,27 @@
 
 # Site settings
 title: JAPJ.net
+author: Jeroen Janssen
 description: > # this means to ignore newlines until "baseurl:"
   JAPJ.net
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "http://www.japj.net" # the base hostname & protocol for your site
-twitter_username: japj
-github_username:  japj
+twitter_user: japj
+github_user:  japj
+
+# Disqus Comments
+disqus_short_name: japj
+disqus_show_comment_count: true
+
+gravatar_url: http://www.gravatar.com/avatar/6fae6f510547bc871de7a35e4af07d9b
+subscribe_url: www.japj.net/feed.xml
+github_repo_url: https://github.com/japj/japj.github.io
 
 # Build settings
 markdown: kramdown
+
+kramdown:
+  hard_wrap: false
 
 #
 # Jekyll Settings
