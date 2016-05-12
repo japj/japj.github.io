@@ -15,7 +15,7 @@ After graduating I kept using it both at home and work.
 
 ## What I do
 
-I work at [Oce Technologies B.V.](http://ocecareers.com/) at the R&D site in Venlo.
+I work as a Software Engineer at [Oce Technologies B.V.](http://ocecareers.com/) at the R&D site in Venlo.
 
 ## Why I do it
 
