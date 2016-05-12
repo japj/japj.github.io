@@ -1,9 +1,91 @@
 ---
 layout: post
-title:  "Howto setup Jekyll and the SyntaxHighligher js library"
-categories: jekyll syntaxhightlighter
+title:  "Howto blog about Biml on Jekyll with SyntaxHighlighter"
+categories: jekyll syntaxhightlighter bimlscript
 comments: true
 ---
+
+In this post I am going to explain howto setup 
+[SyntaxHighlighter](http://alexgorbatchev.com/SyntaxHighlighter/) on a 
+[Jekyll](http://jekyllrb.com) blog (for the purpose of writing about 
+[Biml](https://en.wikipedia.org/wiki/Business_Intelligence_Markup_Language)).
+
+## Why use SyntaxHighlighter instead of Rouge?
+
+I am hosting this blog on [GitHub Pages](https://pages.github.com/) and they use 
+[Rouge](http://rouge.jneen.net/). As of this writing the author has not included my 
+[update for BimlScript](https://github.com/jneen/rouge/pull/415) yet. Also Github Pages
+[does not allow user plugins](https://github.com/jekyll/jekyll/issues/325).
+
+Since I plan on writing about BimlScript in the near future I went looking for an 
+alternative solution. Due to the nature of integrating with Jekyll I thought the best 
+route would probably be a javascript based highlighter since that would be easier to integrate. 
+I looked at a number of different solutions but partly because the official 
+[BimlScript](http://bimlscript.com/) website uses SyntaxHighlighter, it makes sense to use it.
+Meeting [Scott Currie](https://twitter.com/scottcurrie) at the 
+[Biml User Group Netherlands Kickoff](https://www.eventbrite.com/e/biml-accelerator-master-class-and-biml-user-group-netherlands-kick-off-registration-24240208115)
+also helped.
+
+Since it makes sense for the Biml community to be able to blog (with syntax highlighting) about Biml,
+I am also considering to make an overview/instruction on how to use other solutions on different platforms 
+but that is out of scope for this blog post.
+
+## How and where to download it
+
+At the moment of writing SyntaxHighlighter 3.0.83 is the latest official release and you can 
+[download it here from the website](http://alexgorbatchev.com/SyntaxHighlighter/download/).
+
+Note though that [version 4.0 is in progress on github](https://github.com/syntaxhighlighter/syntaxhighlighter).
+However, one of the things that has changed is the build proces and I have not gotten that working on
+Windows yet.
+
+SyntaxHighlighter can be extended for different/new syntaxes through brushes and you can 
+[download the BimlScript Brush fromBimlScript.com](http://bimlscript.com/Scripts/shBrushBimlScript.js).
+
+## Installing it all on Jekyll
+
+SyntaxHighlighter comes with a lot of brushes for different syntaxes and themes. Depending on your
+needs you might want to install/use more than what I will describe here. Also depending on where you
+prefer to put certain filetypes in your Jekyll blog sources you might need to tweak the instructions a bit.
+
+Download and extract the contents of SyntaxHighlighter somewhere. The resulting directory structure should
+be something along the lines of:
+
+	syntaxhighlighter_3.0.83
+	    ├───compass
+	    ├───scripts
+	    ├───src
+	    ├───styles
+	    └───tests
+	        ├───brushes
+	        ├───cases
+	        └───js			
+
+The things we need are located in the `scripts` and `styles` directories and are:
+
+	- js/shCore.js
+	- styles/shCore.css
+	- styles/shThemeDefault.css
+
+Copy these files to your Jekyll source tree. I am assuming the `.js` files end up in your `js/` folder 
+and `.css` files and up in your `css/` folder.
+
+The end result should be something like:
+
+	YourJekyllSources
+		 ├───js
+		 |   ├───shCore.js
+		 |   └───shBrushBimlScript.js
+		 └───css
+             ├───shCore.css
+             └───shThemeDefault.js
+
+## Markdown syntax for SyntaxHighlighter
+
+## Your first BimlScript blogpost
+
+
+
 
 Demo of Jekyll and SyntaxHighlighter
 
