@@ -3,7 +3,7 @@ layout: post
 title:  "Howto setup Jekyll SyntaxHighlighter for BimlScript"
 date:   2016-05-12 22:02:26 +02:00
 categories: syntaxhightlighter bimlscript
-comments: true
+comments: false
 ---
 
 In this post I am going to explain howto setup 
