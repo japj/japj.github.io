@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "T-SQL Tuesday #86 - SQL Server Bugs & Enhancement Requests"
-date:   2017-01-09 08:00:00 +00:00
+date:   2017-01-10 08:00:00 +00:00
 categories: tsql2sday
 comments: true
 ---
