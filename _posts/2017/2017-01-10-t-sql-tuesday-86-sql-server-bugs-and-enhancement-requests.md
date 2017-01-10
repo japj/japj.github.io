@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "T-SQL Tuesday #86 - SQL Server Bugs & Enhancement Requests"
-date:   2017-01-10 08:00:00 +00:00
+date:   2017-01-10 06:00:00 +00:00
 categories: tsql2sday
 comments: true
 ---
@@ -17,7 +17,7 @@ taking this moment to write about BIML (I am working towards a "past year with B
 reflection post), I have instead decided to write about something else that has 
 been bothering me for a while:
 
-[Why can't I build an SSIS Project with MSBuild "out of the box"?](https://connect.microsoft.com/SQLServer/feedback/details/759940/ssis-support-msbuild-as-a-mechanism-for-deploying-ssis-ispac-files)
+[#759940 Why can't I build an SSIS Project with MSBuild "out of the box"?](https://connect.microsoft.com/SQLServer/feedback/details/759940/ssis-support-msbuild-as-a-mechanism-for-deploying-ssis-ispac-files)
 
 My brackground is in Software Engineering, so you could say I am an "accidental BI guy" and 
 I am still shocked that some of the good Software Engineering practices do not seem to have
@@ -26,8 +26,8 @@ landed in "the BI World".
 Being able to do a reproducable (ISPAC) build without additional tools should have been part of the SSIS 
 development/MSBuild stack by now.
 
-(on a side note, this same issue is also true for [SSAS](https://connect.microsoft.com/SQLServer/feedback/details/759939/ssas-support-msbuild-as-a-mechanism-for-deploying-ssas-cubes-models) 
-and [SSRS](https://connect.microsoft.com/SQLServer/feedback/details/759938/ssrs-support-msbuild-as-a-mechanism-for-deploying-ssrs-reports))
+(on a side note, this same issue is also true for [#759939 SSAS](https://connect.microsoft.com/SQLServer/feedback/details/759939/ssas-support-msbuild-as-a-mechanism-for-deploying-ssas-cubes-models) 
+and [#759938 SSRS](https://connect.microsoft.com/SQLServer/feedback/details/759938/ssrs-support-msbuild-as-a-mechanism-for-deploying-ssrs-reports))
 
 Granted, there are some workarounds floating around (e.g. "SSISMSBuild"), but the
 [SSDT (Database Project) people actually seem to get this right](https://blogs.msdn.microsoft.com/ssdt/2016/08/22/releasing-ssdt-with-visual-studio-15-preview-4-and-introducing-ssdt-msbuild-nuget-package/).
