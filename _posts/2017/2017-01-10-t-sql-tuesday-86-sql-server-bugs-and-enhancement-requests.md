@@ -19,7 +19,7 @@ been bothering me for a while:
 
 [#759940 Why can't I build an SSIS Project with MSBuild "out of the box"?](https://connect.microsoft.com/SQLServer/feedback/details/759940/ssis-support-msbuild-as-a-mechanism-for-deploying-ssis-ispac-files)
 
-My brackground is in Software Engineering, so you could say I am an "accidental BI guy" and 
+My background is in Software Engineering, so you could say I am an "accidental BI guy" and 
 I am still shocked that some of the good Software Engineering practices do not seem to have
 landed in "the BI World".
 
