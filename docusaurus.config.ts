@@ -75,8 +75,6 @@ const config: Config = {
         src: 'img/logo.svg',
       },
       items: [
-
-        {to: '/', label: 'Blog', position: 'left'},
         {
           href: 'https://github.com/japj',
           label: 'GitHub',
@@ -103,7 +101,7 @@ const config: Config = {
           ],
         },
         {
-          title: 'Socials',
+          title: 'Social',
           items: [
             {
               label: 'BlueSky',
