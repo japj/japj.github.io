@@ -1,5 +1,4 @@
 ---
-slug: welcome-again
 title: Welcome again
 authors: japj
 tags: [docusaurus]
