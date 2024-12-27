@@ -134,6 +134,15 @@ const config: Config = {
       darkTheme: prismThemes.dracula,
     },
   } satisfies Preset.ThemeConfig,
+
+  plugins: [
+      ["posthog-docusaurus", {
+          apiKey: "phc_fBglQXinvEBtnSiSEcg42GwxiWhHk5WWlYtuh2W5dXX",
+          appUrl: "https://eu.i.posthog.com",
+          enableInDevelopment: false, // optional
+          person_profiles: 'identified_only' // or 'always' to create profiles for anonymous users as well
+      }],
+  ]
 };
 
 export default config;
