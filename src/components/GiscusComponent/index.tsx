@@ -19,8 +19,6 @@ export default function GiscusComponent() {
             theme={colorMode}
             lang="en"
             loading="lazy"
-            crossorigin="anonymous"
-            async
             />
         );
 }

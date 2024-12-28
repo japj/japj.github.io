@@ -35,8 +35,6 @@ Here is what I had to do to get it working for my (v3.6) Docusaurus:
                 theme={colorMode}
                 lang={currentLocale}
                 loading="lazy"
-                crossorigin="anonymous"
-                async
                 />
             );
     }
