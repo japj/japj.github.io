@@ -7,3 +7,8 @@ msbuild:
   label: MSBuild
   permalink: /msbuild
   description: MSBuild related blogposts
+
+llms:
+  label: llms
+  permalink: /llms
+  description: Large Language Model related blogposts
