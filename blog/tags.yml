@@ -12,3 +12,8 @@ llms:
   label: llms
   permalink: /llms
   description: Large Language Model related blogposts
+
+insights:
+  label: insights
+  permalink: /insights
+  description: Personal insights
