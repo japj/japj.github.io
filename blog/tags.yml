@@ -17,3 +17,8 @@ insights:
   label: insights
   permalink: /insights
   description: Personal insights
+
+opensource:
+  label: opensource
+  permalink: /opensource
+  description: Open Source ecosystem related posts
