@@ -36,7 +36,7 @@ Once this was working well enough, it was kind of "problem solved", and I stoppe
 
 But because it is all opensource, it had a life on its own and at some point (a few years) later I ran into parts of this being used in [Xen](https://xenproject.org) and [Qemu](https://www.qemu.org).
 
-Which is crazy in a way to realise (since I was not expecting me to have such an "impact").
+Which is crazy in a way to realise, since I was not expecting my code being used in such (worldwide) projects.
 
 
 
