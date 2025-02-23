@@ -22,3 +22,8 @@ opensource:
   label: opensource
   permalink: /opensource
   description: Open Source ecosystem related posts
+
+choir:
+  label: choir
+  permalink: /choir
+  description: Choir related posts
