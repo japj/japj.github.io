@@ -13,7 +13,8 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "npm install",
-	"postStartCommand": "nohup bash -c 'npm run serve &'",
+	"waitFor": "postCreateCommand",
+	"postStartCommand": "nohup bash -c 'npm run start &'",
 
 	// Configure tool-specific properties.
 	// "customizations": {},
