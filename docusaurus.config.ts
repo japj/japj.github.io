@@ -142,6 +142,12 @@ const config: Config = {
           enableInDevelopment: false, // optional
           person_profiles: 'identified_only' // or 'always' to create profiles for anonymous users as well
       }],
+      [
+        require.resolve("@cmfcmf/docusaurus-search-local"),
+        {
+          // Options here
+        },
+      ],
   ],
 
   themes: ['@docusaurus/theme-mermaid'],
