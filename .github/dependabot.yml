@@ -9,3 +9,40 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    assignees:
+      - japj
+    reviewers:
+      - japj
+    labels:
+      - dependencies
+      - npm
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "react"
+        versions: ["19.x"] # docusaurus-search-local does not yet work with react 19
+
+  - package-ecosystem: "github-actions"
+    directory: "/" # Location of GitHub Actions workflows
+    schedule:
+      interval: "weekly"
+    assignees:
+      - japj
+    reviewers:
+      - japj
+    labels:
+      - dependencies
+      - github-actions
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "github-actions"
+    directory: "/.devcontainer" # Location of devcontainer configuration
+    schedule:
+      interval: "weekly"
+    assignees:
+      - japj
+    reviewers:
+      - japj
+    labels:
+      - dependencies
+      - devcontainer
+    open-pull-requests-limit: 5
