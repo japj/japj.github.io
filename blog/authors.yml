@@ -1,3 +1,7 @@
 japj:
   name: Jeroen Janssen
   image_url: /img/japj.png
+  socials:
+    bluesky: japj.bsky.social
+    github: japj
+    youtube: japjnl
