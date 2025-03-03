@@ -1,10 +1,10 @@
 ---
-title: "About JAPJ.net"
+title: "About japj.net"
 ---
 
 ## Who I am
 
-"JAPJ" is the account name I first got during my study and is based on my name (Jeroen Antonius Petrus Janssen or J.A.P. Janssen).
+"japj" is the account name I first got during my study and is based on my name (Jeroen Antonius Petrus Janssen or J.A.P. Janssen).
 After graduating I kept using this both at home and work.
 
 ## What I do for fun

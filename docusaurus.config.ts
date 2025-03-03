@@ -59,6 +59,7 @@ const config: Config = {
           onUntruncatedBlogPosts: 'warn',
           showLastUpdateTime: true,
           blogSidebarCount: 'ALL',
+          blogTitle: 'Blog',
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -75,7 +76,7 @@ const config: Config = {
     // Replace with your project's social card
     // image: 'img/docusaurus-social-card.jpg',
     navbar: {
-      title: 'Blog',
+      title: 'japj.net',
       logo: {
         alt: 'My Site Logo',
         src: 'img/logo.png',
