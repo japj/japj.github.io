@@ -34,7 +34,7 @@ updates:
       - github-actions
     open-pull-requests-limit: 5
 
-  - package-ecosystem: "github-actions"
+  - package-ecosystem: "devcontainers"
     directory: "/.devcontainer" # Location of devcontainer configuration
     schedule:
       interval: "weekly"
