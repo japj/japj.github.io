@@ -61,6 +61,9 @@ const config: Config = {
         theme: {
           customCss: './src/css/custom.css',
         },
+        pages: {
+          routeBasePath: 'pages',
+        }
       } satisfies Preset.Options,
     ],
   ],
@@ -85,6 +88,11 @@ const config: Config = {
           sidebarId: 'tutorialSidebar',
           position: 'left',
           label: 'Tutorial',
+        },
+        {
+          to: 'pages/about',
+          label: 'About Me',
+          position: 'left',
         },
       ],
     },
@@ -112,20 +120,7 @@ const config: Config = {
               href: 'https://www.youtube.com/@japjnl',
             },
           ],
-        },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'Blog',
-              to: '/',
-            },
-            {
-              label: 'GitHub',
-              href: 'https://github.com/japj',
-            },
-          ],
-        },
+        }
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Jeroen Janssen. Built with Docusaurus.`,
     },
