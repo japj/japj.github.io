@@ -57,12 +57,15 @@ const config: Config = {
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
+          showLastUpdateTime: true,
+          blogSidebarCount: 'ALL',
         },
         theme: {
           customCss: './src/css/custom.css',
         },
         pages: {
           routeBasePath: 'pages',
+          showLastUpdateTime: true,
         }
       } satisfies Preset.Options,
     ],
@@ -72,17 +75,13 @@ const config: Config = {
     // Replace with your project's social card
     // image: 'img/docusaurus-social-card.jpg',
     navbar: {
-      title: 'japj.net',
+      title: 'Blog',
       logo: {
         alt: 'My Site Logo',
         src: 'img/logo.svg',
       },
       items: [
-        {
-          href: 'https://github.com/japj',
-          label: 'GitHub',
-          position: 'right',
-        },
+
         {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
@@ -92,7 +91,12 @@ const config: Config = {
         {
           to: 'pages/about',
           label: 'About Me',
-          position: 'left',
+          position: 'right',
+        },
+        {
+          href: 'https://github.com/japj',
+          label: 'GitHub',
+          position: 'right',
         },
       ],
     },
