@@ -20,6 +20,8 @@ updates:
     ignore:
       - dependency-name: "react"
         versions: ["19.x"] # docusaurus-search-local does not yet work with react 19
+      - dependency-name: "react-dom"
+        versions: ["19.x"] # docusaurus-search-local does not yet work with react 19
 
   - package-ecosystem: "github-actions"
     directory: "/" # Location of GitHub Actions workflows
@@ -35,7 +37,7 @@ updates:
     open-pull-requests-limit: 5
 
   - package-ecosystem: "devcontainers"
-    directory: "/.devcontainer" # Location of devcontainer configuration
+    directory: "/" # Location of devcontainer configuration
     schedule:
       interval: "weekly"
     assignees:
