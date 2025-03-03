@@ -39,8 +39,8 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/japj/japj.github.io/tree/main/',
+          editUrl: 'https://github.com/japj/japj.github.io/tree/main/',
+          showLastUpdateTime: true,
         },
         blog: {
           routeBasePath: "/",
@@ -78,7 +78,7 @@ const config: Config = {
       title: 'Blog',
       logo: {
         alt: 'My Site Logo',
-        src: 'img/logo.svg',
+        src: 'img/logo.png',
       },
       items: [
 
