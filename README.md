@@ -2,6 +2,16 @@
 
 This personal website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
 
+## Dependencies
+
+I am using the following additional dependencies:
+
+- @cmfcmf/docusaurus-search-local: to have a local search index of the website
+- @giscus/react: for allowing comments (using github)
+- posthog-docusaurus: for EU friendly web analytics
+- @docusaurus/theme-mermaid: for inline rendering of mermaid diagrams
+- react-player: for inline youtube video player
+
 ### Installation
 
 ```
