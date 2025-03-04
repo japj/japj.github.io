@@ -108,7 +108,7 @@ const config: Config = {
           title: 'Docs',
           items: [
             {
-              label: 'Tutorial',
+              label: 'Create Vocal Learning Tracks',
               to: '/docs/intro',
             },
           ],

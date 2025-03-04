@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Introduction
 
-Welcome to "Creating Vocal Rehearsal Tracks".
+Welcome to "Creating Vocal Learning Tracks".
 
 ## Where is the guide?
 
