@@ -42,8 +42,8 @@ Here are some of the topics I want to share in this guide:
 
 My name is Jeroen Janssen and I have been making music as long as I can remember.
 
-Although I started as an instrumentalist (playing trumpet, trombone and bass guitar), I have been happily singing in mixed choirs (pop/jazz) since 2010. And I have been creating rehearsal tracks right from the start.
+Although I started as an instrumentalist (playing trumpet, trombone and bass guitar), I have been happily singing in mixed choirs (pop/jazz) since 2010. And I have been creating learning tracks right from the start.
 
-You can find a sneak peek at my current workflow at [my blogpost about my step for creating rehearsal tracks](../2025/02/23/my-steps-for-creating-choir-rehearsal-tracks/)
+You can find a sneak peek at my current workflow at [my blogpost about my step for creating learning tracks](../2025/02/23/my-steps-for-creating-choir-learning-tracks/)
 
 By creating vocal learning tracks I combine two of my passions: computers and music.

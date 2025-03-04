@@ -11,12 +11,12 @@ After graduating I kept using this both at home and work.
 
 I read a fair bit (mostly fantasy related) of books and I also try to make music from time to time.
 Currently I am singing in two mixed choirs (Tenor), but I still play trombone and bass guitar on occasions.
-When I joined my first choir in 2010 I started creating rehearsal tracks to help me learn the choir songs.
+When I joined my first choir in 2010 I started creating learning tracks to help me learn the choir songs.
 
 ## Why I do it
 
 Technology, computers and programming have been a part of my life since my dad used to take home a C64 from his work during the summer holidays. 
-By creating choir rehearsal tracks I can combine my 2 passions. 
+By creating choir learning tracks I can combine my 2 passions. 
 
 ## What I do at work
 
