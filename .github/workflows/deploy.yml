@@ -2,6 +2,9 @@
 
 name: Deploy to GitHub Pages
 
+permissions:
+  contents: write # to upload the build artifact
+
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
@@ -32,10 +35,12 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
       - name: Build website
         run: npm run build
 
       - name: Upload Build Artifact
+        id: upload-artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: build
@@ -55,6 +60,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     runs-on: ubuntu-latest
+    
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
