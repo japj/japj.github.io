@@ -87,7 +87,7 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Tutorial',
+          label: 'Create Vocal Learning Tracks',
         },
         {
           to: 'pages/about',

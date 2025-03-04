@@ -2,46 +2,46 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# Creating Vocal Learning Tracks
 
-Let's discover **Docusaurus in less than 5 minutes**.
+## Where is the guide?
 
-## Getting Started
+I am writing this guide (starting in March 2025).
 
-Get started by **creating a new site**.
+You can see [my notes from the Vocal Pop & Jazz Days 2024](https://github.com/japj/VPJD2024), where I talked with several singers and conductors on the practice of learning (choir) songs.
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+It has been a while since, but I finally started writing and I will use these notes as an input.
 
-### What you'll need
+Feel free to reach out if you have any questions or topics that you find interesting.
 
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+## What this guide is and isn't
 
-## Generate a new site
+This is not a guide for writing your own vocal arrangements. It is also not about learning to sing.
 
-Generate a new Docusaurus site using the **classic template**.
+The goal of this guide is to give you knowledge and practical tips to create your own vocal learning tracks efficiently.
 
-The classic template will automatically be added to your project after you run the command:
+You will be able to create Vocal Learning Tracks for the songs you are singing in your choir, tailored to your needs. 
 
-```bash
-npm init docusaurus@latest my-website classic
-```
+Every choir is different. Every song is different. Every arrangement is different.
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+Before deciding to create your own Vocal Learning Tracks, I would suggest looking if someone is already selling them. This saves you time that you can spend on something else and helps another artist out by buying something from their catalog.
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+If there are no Vocal Learning Track yet then this guide will help you create them.
 
-## Start your site
+Here are some of the topics I want to share in this guide:
 
-Run the development server:
+- Why you need vocal learning tracks
+- What variations of vocal learning tracks are possible and make sense
+- How to get sheetmusic into a notation program
+- How to mix learning tracks efficiently
+- How to use a vocal synthesizer for learning tracks
 
-```bash
-cd my-website
-npm run start
-```
+## Who I am
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+My name is Jeroen Janssen and I have been making music as long as I can remember.
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+Although I started as an instrumentalist (playing trumpet, trombone and bass guitar), I have been happily singing in mixed choirs (pop/jazz) since 2010. And I have been creating rehearsal tracks right from the start.
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+You can find a sneak peek at my current workflow at [my blogpost about my step for creating rehearsal tracks](../2025/02/23/my-steps-for-creating-choir-rehearsal-tracks/)
+
+By creating vocal learning tracks I combine two of my passions: computers and music.
