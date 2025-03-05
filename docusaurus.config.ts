@@ -109,7 +109,7 @@ const config: Config = {
           items: [
             {
               label: 'Create Vocal Learning Tracks',
-              to: '/docs/intro',
+              to: '/docs/introduction',
             },
           ],
         },
