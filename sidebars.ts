@@ -28,6 +28,20 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         'mixing/overview',
+        {
+          type: 'category',
+          label: 'Manual Export Examples',
+          link: {
+            type: 'generated-index',
+            title: 'Manual Export Examples',
+            description:
+              "Examples of manual exporting mixes from different programs:",
+            keywords: ['guides'],
+          },
+          items: [
+            'mixing/manual-export/dorico',
+          ]
+        }
       ]
     }
   ],
