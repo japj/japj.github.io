@@ -15,7 +15,21 @@ import type { SidebarsConfig } from '@docusaurus/plugin-content-docs';
 const sidebars: SidebarsConfig = {
   // By default, Docusaurus generates a sidebar from the docs folder structure
   tutorialSidebar: [
-    "introduction"
+    "introduction",
+    {
+      type: 'category',
+      label: 'Mixing Learning Tracks',
+      link: {
+        type: 'generated-index',
+        title: 'Mixing Learning Tracks',
+        description:
+          "Let's learn about mixing Vocal Learning Tracks",
+        keywords: ['guides'],
+      },
+      items: [
+        'mixing/overview',
+      ]
+    }
   ],
 };
 
