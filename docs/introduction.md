@@ -1,7 +1,3 @@
----
-sidebar_position: 1
----
-
 # Introduction
 
 Welcome to "Creating Vocal Learning Tracks".
