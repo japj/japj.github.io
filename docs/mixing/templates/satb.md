@@ -10,6 +10,10 @@ Input Bus|Name
 3|Tenor
 4|Bass
 
+:::note
+Stereo Bus setup not needed if Part mix is not stereo
+:::
+
 Stereo Bus|Name
 ---|---
 5|Soprano Left
