@@ -41,6 +41,21 @@ const sidebars: SidebarsConfig = {
           items: [
             'mixing/manual-export/dorico',
           ]
+        },
+        {
+          type: 'category',
+          label: 'DAW Mixing Templates',
+          link: {
+            type: 'generated-index',
+            title: 'Example DAW Mixing Templates',
+            description:
+              "Examples of DAW Mixing Templates",
+            keywords: ['guides'],
+          },
+          items: [
+            'mixing/templates/satb',
+            
+          ]
         }
       ]
     }
