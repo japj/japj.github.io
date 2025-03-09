@@ -49,7 +49,7 @@ const sidebars: SidebarsConfig = {
             type: 'generated-index',
             title: 'Mixing Templates',
             description:
-              "Mixing Templates",
+              "Help understand the concept of a Mixing Templates and show to create one",
             keywords: ['guides'],
           },
           items: [
