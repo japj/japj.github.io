@@ -53,8 +53,8 @@ const sidebars: SidebarsConfig = {
             keywords: ['guides'],
           },
           items: [
+            'mixing/templates/concept',
             'mixing/templates/satb',
-            
           ]
         }
       ]
