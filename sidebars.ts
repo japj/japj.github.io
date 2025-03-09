@@ -30,12 +30,12 @@ const sidebars: SidebarsConfig = {
         'mixing/overview',
         {
           type: 'category',
-          label: 'Manual Export Examples',
+          label: 'Manual mixing examples',
           link: {
             type: 'generated-index',
-            title: 'Manual Export Examples',
+            title: 'Manual mixing examples',
             description:
-              "Examples of manual exporting mixes from different programs:",
+              "Examples of manually exporting mixes from different programs:",
             keywords: ['guides'],
           },
           items: [
@@ -44,16 +44,16 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
-          label: 'DAW Mixing Templates',
+          label: 'Mixing Templates',
           link: {
             type: 'generated-index',
-            title: 'Example DAW Mixing Templates',
+            title: 'Mixing Templates',
             description:
-              "Examples of DAW Mixing Templates",
+              "Mixing Templates",
             keywords: ['guides'],
           },
           items: [
-            'mixing/templates/concept',
+            'mixing/templates/what-is-a-mixing-template',
             'mixing/templates/satb',
           ]
         }
