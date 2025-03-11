@@ -27,7 +27,8 @@
     "prism-react-renderer": "^2.4.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-player": "^2.16.0"
+    "react-player": "^2.16.0",
+    "cheerio": "1.0.0-rc.12"
   },
   "overrides": {
     "@cmfcmf/docusaurus-search-local": {
