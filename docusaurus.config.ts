@@ -41,6 +41,7 @@ const config: Config = {
           // Remove this to remove the "edit this page" links.
           editUrl: 'https://github.com/japj/japj.github.io/tree/main/',
           showLastUpdateTime: true,
+          sidebarCollapsed: false,
         },
         blog: {
           routeBasePath: "/",
