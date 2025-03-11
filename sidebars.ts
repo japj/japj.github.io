@@ -17,6 +17,7 @@ const sidebars: SidebarsConfig = {
   tutorialSidebar: [
     "introduction",
     "overview",
+    "examples",
     {
       type: 'category',
       label: 'Mixing Learning Tracks',
