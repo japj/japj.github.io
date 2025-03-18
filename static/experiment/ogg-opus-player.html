@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multichannel Ogg-Opus Audio Player</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    .container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    #fileInput {
+      margin-bottom: 15px;
+      width: 100%;
+    }
+    .channel-controls {
+      margin-top: 20px;
+    }
+    .channel {
+      background-color: #f9f9f9;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      border-left: 4px solid #4CAF50;
+    }
+    .slider-container {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+    }
+    .slider-container label {
+      width: 80px;
+      font-weight: bold;
+    }
+    .slider-container input {
+      flex-grow: 1;
+    }
+    .slider-value {
+      width: 50px;
+      text-align: right;
+      margin-left: 10px;
+    }
+    .status {
+      text-align: center;
+      margin: 10px 0;
+      font-style: italic;
+      color: #666;
+    }
+    .visualizer {
+      width: 100%;
+      height: 100px;
+      background-color: #222;
+      margin-top: 20px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Multichannel Ogg-Opus Audio Player</h1>
+    
+    <div>
+      <input type="file" id="fileInput" accept=".opus,.ogg" />
+      <div class="status" id="status">No file loaded</div>
+    </div>
+    
+    <div class="controls">
+      <button id="playButton" disabled>Play</button>
+      <button id="pauseButton" disabled>Pause</button>
+      <button id="stopButton" disabled>Stop</button>
+    </div>
+
+    <canvas id="visualizer" class="visualizer"></canvas>
+    
+    <div class="channel-controls" id="channelControls">
+      <!-- Channel controls will be added here dynamically -->
+    </div>
+  </div>
+
+  <!-- Load the ogg-opus-decoder from CDN -->
+  <script src="ogg-opus-decoder.js"></script>
+  
+  <script>
+    // Main audio context
+    let audioContext;
+    // Array of channel nodes
+    let channelNodes = [];
+    // Decoded audio data
+    let audioBuffer;
+    // Audio source node
+    let sourceNode;
+    // Analyser nodes for visualization
+    let analyserNodes = [];
+    // Flag to check if audio is playing
+    let isPlaying = false;
+    // Animation frame ID
+    let animationId;
+    
+    // DOM Elements
+    const fileInput = document.getElementById('fileInput');
+    const playButton = document.getElementById('playButton');
+    const pauseButton = document.getElementById('pauseButton');
+    const stopButton = document.getElementById('stopButton');
+    const channelControls = document.getElementById('channelControls');
+    const statusElement = document.getElementById('status');
+    const visualizer = document.getElementById('visualizer');
+    const visualizerCtx = visualizer.getContext('2d');
+    const { OggOpusDecoderWebWorker, OggOpusDecoder } = window["ogg-opus-decoder"];
+    
+    // Initialize audio context on user interaction
+    function initAudioContext() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+    
+    // Update button states
+    function updateButtonStates() {
+      playButton.disabled = !audioBuffer || isPlaying;
+      pauseButton.disabled = !isPlaying;
+      stopButton.disabled = !isPlaying;
+    }
+    
+    // Load and decode audio file
+    fileInput.addEventListener('change', async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      statusElement.textContent = 'Loading file...';
+      
+      try {
+        initAudioContext();
+        
+        // Read file as array buffer
+        const arrayBuffer = await file.arrayBuffer();
+        
+        // Try to extract metadata before decoding
+        let metadata = await extractOpusMetadata(arrayBuffer);
+
+        // Use ogg-opus-decoder to decode the file
+        if (!OggOpusDecoder) {
+          throw new Error('Ogg-Opus-Decoder library not loaded');
+        }
+        
+        const decoder = new OggOpusDecoder();
+        statusElement.textContent = 'Decoding Ogg-Opus file...';
+        
+        // Decode the Opus data
+        const decoded = await decoder.decode(new Uint8Array(arrayBuffer));
+        
+        // Get the audio data and sample rate
+        const audioData = decoded.channelData;
+        const sampleRate = decoded.sampleRate;
+        
+        statusElement.textContent = `Decoded ${audioData.length} channels at ${sampleRate}Hz`;
+        
+        // Create an audio buffer from the decoded data
+        audioBuffer = audioContext.createBuffer(
+          audioData.length,
+          audioData[0].length,
+          sampleRate
+        );
+
+        // Create channel labels from metadata comment or default numbering
+        if (metadata && metadata.comment && metadata.comment.includes("Channel order:")) {
+          const orderPart = metadata.comment.split("Channel order:")[1].trim();
+          channelLabels = orderPart.split(',').map(label => label.trim());
+        } else {
+          // Default channel labels if metadata is not available
+          channelLabels = Array.from({ length: audioBuffer.numberOfChannels }, (_, i) => `Channel ${i+1}`);
+        }
+        
+        // Copy the channel data to the audio buffer
+        for (let i = 0; i < audioData.length; i++) {
+          audioBuffer.copyToChannel(audioData[i], i);
+        }
+        
+        // Create channel controls
+        createChannelControls(audioData.length);
+        
+        // Enable play button
+        updateButtonStates();
+        
+      } catch (error) {
+        console.error('Error decoding file:', error);
+        statusElement.textContent = `Error: ${error.message}`;
+      }
+    });
+
+    // Extract metadata from Opus file (basic implementation)
+    async function extractOpusMetadata(arrayBuffer) {
+      // This is a simplified metadata extraction
+      // A complete implementation would need to parse the Opus container format
+      
+      // Convert ArrayBuffer to string for simple text search
+      const uint8Array = new Uint8Array(arrayBuffer);
+      const textDecoder = new TextDecoder('utf-8');
+      
+      // Look for comment metadata - this is a simplified approach
+      const dataView = new DataView(arrayBuffer);
+      const possibleMetadata = {};
+      
+      // Search for common metadata identifier patterns
+      let commentOffset = -1;
+      
+      // Search for the string "comment=" in the first 10KB
+      const searchLength = Math.min(10 * 1024, uint8Array.length);
+      const searchText = textDecoder.decode(uint8Array.slice(0, searchLength));
+      
+      if (searchText.includes("DESCRIPTION=")) {
+        const commentStart = searchText.indexOf("DESCRIPTION=") + 8;
+        const commentEnd = searchText.indexOf("OggS\0", commentStart);
+        if (commentEnd > commentStart) {
+          possibleMetadata.comment = searchText.substring(commentStart, commentEnd);
+        }
+      }
+      
+      return possibleMetadata;
+    }
+    
+    // Create channel controls for panning and volume
+    function createChannelControls(numChannels) {
+      // Clear existing controls
+      channelControls.innerHTML = '';
+      channelNodes = [];
+      analyserNodes = [];
+      
+      for (let i = 0; i < numChannels; i++) {
+        const channelDiv = document.createElement('div');
+        const channelLabel = i < channelLabels.length ? channelLabels[i] : `Channel ${i+1}`;
+        channelDiv.className = 'channel';
+        channelDiv.innerHTML = `
+          <h3>${channelLabel}</h3>
+          <div class="slider-container">
+            <label for="pan-${i}">Pan:</label>
+            <input type="range" id="pan-${i}" min="-1" max="1" step="0.1" value="0" class="pan-slider" data-channel="${i}">
+            <span class="slider-value" id="pan-value-${i}">0</span>
+          </div>
+          <div class="slider-container">
+            <label for="volume-${i}">Volume:</label>
+            <input type="range" id="volume-${i}" min="0" max="2" step="0.1" value="1" class="volume-slider" data-channel="${i}">
+            <span class="slider-value" id="volume-value-${i}">1</span>
+          </div>
+        `;
+        
+        channelControls.appendChild(channelDiv);
+      }
+      
+      // Add event listeners for sliders
+      document.querySelectorAll('.pan-slider').forEach(slider => {
+        slider.addEventListener('input', function() {
+          const channelIndex = parseInt(this.dataset.channel);
+          const value = parseFloat(this.value);
+          document.getElementById(`pan-value-${channelIndex}`).textContent = value.toFixed(1);
+          
+          if (channelNodes[channelIndex]) {
+            channelNodes[channelIndex].pan.value = value;
+          }
+        });
+      });
+      
+      document.querySelectorAll('.volume-slider').forEach(slider => {
+        slider.addEventListener('input', function() {
+          const channelIndex = parseInt(this.dataset.channel);
+          const value = parseFloat(this.value);
+          document.getElementById(`volume-value-${channelIndex}`).textContent = value.toFixed(1);
+          
+          if (channelNodes[channelIndex]) {
+            channelNodes[channelIndex].gain.value = value;
+          }
+        });
+      });
+    }
+    
+    // Function to setup and start the audio playback
+    function setupAudioNodes() {
+      if (isPlaying) return;
+      
+      // Create a source node
+      sourceNode = audioContext.createBufferSource();
+      sourceNode.buffer = audioBuffer;
+      
+      // Create channel splitter
+      const splitter = audioContext.createChannelSplitter(audioBuffer.numberOfChannels);
+      
+      // Connect source to splitter
+      sourceNode.connect(splitter);
+      
+      // Create channel nodes for each channel with panning and gain control
+      for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
+        // Create a gain node for the channel
+        const gainNode = audioContext.createGain();
+        gainNode.gain.value = parseFloat(document.getElementById(`volume-${i}`).value);
+        
+        // Create a panner node for the channel
+        const pannerNode = audioContext.createStereoPanner();
+        pannerNode.pan.value = parseFloat(document.getElementById(`pan-${i}`).value);
+        
+        // Create an analyser node for visualization
+        const analyserNode = audioContext.createAnalyser();
+        analyserNode.fftSize = 256;
+        
+        // Connect the nodes
+        splitter.connect(gainNode, i);
+        gainNode.connect(pannerNode);
+        pannerNode.connect(analyserNode);
+        analyserNode.connect(audioContext.destination);
+        
+        // Store the nodes for later access
+        channelNodes[i] = {
+          gain: gainNode.gain,
+          pan: pannerNode.pan
+        };
+        
+        analyserNodes[i] = analyserNode;
+      }
+      
+      // Start visualization
+      visualize();
+    }
+    
+    // Play button event
+    playButton.addEventListener('click', () => {
+      if (!audioBuffer) return;
+      
+      initAudioContext();
+      
+      // If the audio context is suspended (e.g., by browser autoplay policy), resume it
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+      
+      setupAudioNodes();
+      
+      // If we're resuming after a pause, we don't need to create a new source
+      if (!isPlaying) {
+        sourceNode.start(0);
+        isPlaying = true;
+        updateButtonStates();
+        visualize();
+        
+        // When playback ends
+        sourceNode.onended = () => {
+          isPlaying = false;
+          updateButtonStates();
+          cancelAnimationFrame(animationId);
+          statusElement.textContent = 'Playback ended';
+        };
+        
+        statusElement.textContent = 'Playing...';
+      }
+    });
+    
+    // Pause button event
+    pauseButton.addEventListener('click', () => {
+      if (isPlaying) {
+        audioContext.suspend();
+        isPlaying = false;
+        updateButtonStates();
+        cancelAnimationFrame(animationId);
+        statusElement.textContent = 'Paused';
+      }
+    });
+    
+    // Stop button event
+    stopButton.addEventListener('click', () => {
+      if (isPlaying) {
+        sourceNode.stop();
+        isPlaying = false;
+        updateButtonStates();
+        cancelAnimationFrame(animationId);
+        statusElement.textContent = 'Stopped';
+      }
+    });
+    
+    // Visualize the audio
+    function visualize() {
+      // Set canvas size
+      visualizer.width = visualizer.clientWidth;
+      visualizer.height = visualizer.clientHeight;
+      
+      const WIDTH = visualizer.width;
+      const HEIGHT = visualizer.height;
+      
+      // Clear the canvas
+      visualizerCtx.clearRect(0, 0, WIDTH, HEIGHT);
+      
+      if (!isPlaying) return;
+      
+      // Draw each channel's visualization
+      const channelWidth = WIDTH / analyserNodes.length;
+      
+      for (let i = 0; i < analyserNodes.length; i++) {
+        const analyser = analyserNodes[i];
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        
+        // Get frequency data
+        analyser.getByteFrequencyData(dataArray);
+        
+        // Calculate bar width
+        const barWidth = channelWidth / bufferLength;
+        let x = i * channelWidth;
+        
+        // Use different hues for different channels
+        const hue = (360 / analyserNodes.length) * i;
+        
+        // Draw bars
+        for (let j = 0; j < bufferLength; j++) {
+          const barHeight = (dataArray[j] / 255) * HEIGHT;
+          
+          visualizerCtx.fillStyle = `hsla(${hue}, 100%, 50%, 0.7)`;
+          visualizerCtx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
+          
+          x += barWidth;
+        }
+      }
+      
+      // Call next frame
+      animationId = requestAnimationFrame(visualize);
+    }
+    
+    // Handle resize
+    window.addEventListener('resize', () => {
+      if (isPlaying) {
+        visualizer.width = visualizer.clientWidth;
+        visualizer.height = visualizer.clientHeight;
+      }
+    });
+
+    /* optional part to directly load opus file */
+
+    // URL of the Opus file to load
+    const opusFileUrl = 'output.opus'; // Replace with the actual URL of the Opus file
+
+    // Function to load the Opus file programmatically
+    async function loadOpusFile() {
+      try {
+        const response = await fetch(opusFileUrl);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch file: ${response.statusText}`);
+        }
+
+        const arrayBuffer = await response.arrayBuffer();
+        const file = new File([arrayBuffer], 'file.opus', { type: 'audio/ogg' });
+
+        // Create a DataTransfer object to simulate a file input event
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+
+        // Set the file to the fileInput element
+        fileInput.files = dataTransfer.files;
+
+        // Trigger the change event to process the file
+        fileInput.dispatchEvent(new Event('change'));
+      } catch (error) {
+        console.error('Error loading Opus file:', error);
+        statusElement.textContent = `Error: ${error.message}`;
+      }
+    }
+
+    // Call the function to load the file when the page loads
+    window.addEventListener('DOMContentLoaded', loadOpusFile);
+
+  </script>
+</body>
+</html>
