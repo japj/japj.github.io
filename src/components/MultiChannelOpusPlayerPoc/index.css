@@ -11,6 +11,27 @@
   align-items: center;
 }
 
+.controls button:first-of-type {
+  background-color: #4CAF50; /* Bright green for play button */
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.controls button:first-of-type:hover {
+  background-color: #45a049; /* Slightly darker green on hover */
+}
+
+.controls button:first-of-type:disabled {
+  background-color: #cccccc; /* Gray when disabled */
+  cursor: not-allowed;
+}
+
 .file-input {
   flex: 1;
 }
