@@ -1,15 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { OggOpusDecoder } from 'ogg-opus-decoder';
 
-const MultiChannelOpusPlayerPoc = () => {
+const MultiChannelOpusPlayerPoc = ({ 
+  sourceUrl = '', // URL to opus file
+  showFileBrowser = true, // Whether to show file input
+  onError = (error) => console.error(error), // Error callback
+  onLoad = () => {}, // Callback when file is loaded
+  onPlay = () => {}, // Callback when playback starts
+  onPause = () => {} // Callback when playback pauses
+}) => {
   const [audioContext, setAudioContext] = useState(null);
   const [audioBuffer, setAudioBuffer] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [channels, setChannels] = useState([]);
   const [status, setStatus] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   
   const sourceNodeRef = useRef(null);
-  const visualizerRef = useRef(null);
   const channelNodesRef = useRef([]);
   const analyserNodesRef = useRef([]);
   const animationIdRef = useRef(null);
@@ -24,21 +31,35 @@ const MultiChannelOpusPlayerPoc = () => {
     return audioContext;
   };
 
-  // Handle file upload
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+  // Fetch and process remote file
+  const loadRemoteFile = async (url) => {
+    setIsLoading(true);
+    setStatus('Fetching file...');
+    
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const arrayBuffer = await response.arrayBuffer();
+      await processAudioData(arrayBuffer);
+      onLoad();
+    } catch (error) {
+      const errorMessage = `Error loading file from ${url}: ${error.message}`;
+      setStatus(errorMessage);
+      onError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    setStatus('Loading file...');
+  // Process audio data from either source
+  const processAudioData = async (arrayBuffer) => {
+    setStatus('Decoding Ogg-Opus file...');
     
     try {
       const context = initAudioContext();
-      const arrayBuffer = await file.arrayBuffer();
-      
-      // Extract metadata (simplified version)
       const decoder = new OggOpusDecoder();
-      setStatus('Decoding Ogg-Opus file...');
-      
       const decoded = await decoder.decode(new Uint8Array(arrayBuffer));
       const audioData = decoded.channelData;
       const sampleRate = decoded.sampleRate;
@@ -70,8 +91,30 @@ const MultiChannelOpusPlayerPoc = () => {
       setChannels(newChannels);
       
     } catch (error) {
-      console.error('Error decoding file:', error);
+      const errorMessage = 'Error decoding file: ' + error.message;
+      setStatus(errorMessage);
+      onError(error);
+      throw error;
+    }
+  };
+
+  // Handle file upload
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setIsLoading(true);
+    setStatus('Loading file...');
+    
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      await processAudioData(arrayBuffer);
+      onLoad();
+    } catch (error) {
       setStatus(`Error: ${error.message}`);
+      onError(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -120,9 +163,11 @@ const MultiChannelOpusPlayerPoc = () => {
       setupAudioNodes();
       sourceNodeRef.current.start(0);
       setIsPlaying(true);
+      onPlay();
     } else {
       sourceNodeRef.current?.stop();
       setIsPlaying(false);
+      onPause();
     }
   };
 
@@ -145,6 +190,13 @@ const MultiChannelOpusPlayerPoc = () => {
     }
   };
 
+  // Load remote file when sourceUrl changes
+  useEffect(() => {
+    if (sourceUrl) {
+      loadRemoteFile(sourceUrl);
+    }
+  }, [sourceUrl]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -163,15 +215,18 @@ const MultiChannelOpusPlayerPoc = () => {
   return (
     <div className="opus-choir-player">
       <div className="controls">
-        <input
-          type="file"
-          accept=".opus"
-          onChange={handleFileUpload}
-          className="file-input"
-        />
+        {showFileBrowser && (
+          <input
+            type="file"
+            accept=".opus"
+            onChange={handleFileUpload}
+            className="file-input"
+            disabled={isLoading}
+          />
+        )}
         <button
           onClick={togglePlayback}
-          disabled={!audioBuffer}
+          disabled={!audioBuffer || isLoading}
         >
           {isPlaying ? 'Pause' : 'Play'}
         </button>
