@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { OggOpusDecoder } from 'ogg-opus-decoder';
+import './index.css'; // Import the CSS file
 
 const MultiChannelOpusPlayerPoc = ({ 
   sourceUrl = '', // URL to opus file
