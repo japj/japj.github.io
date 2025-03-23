@@ -54,12 +54,35 @@ const MultiChannelOpusPlayerPoc = ({
     }
   };
 
+  // Extract metadata from the Opus file
+  const extractOpusMetadata = async (arrayBuffer) => {
+    try {
+      const uint8Array = new Uint8Array(arrayBuffer);
+      const textDecoder = new TextDecoder('utf-8');
+      const searchLength = Math.min(10 * 1024, uint8Array.length); // Search first 10KB
+      const searchText = textDecoder.decode(uint8Array.slice(0, searchLength));
+
+      const metadata = {};
+      if (searchText.includes("DESCRIPTION=")) {
+        const commentStart = searchText.indexOf("DESCRIPTION=") + "DESCRIPTION=".length;
+        const commentEnd = searchText.indexOf("OggS\0", commentStart);
+        metadata.comment = searchText.substring(commentStart, commentEnd).trim();
+      }
+      return metadata;
+    } catch (error) {
+      console.error('Error extracting metadata:', error);
+      throw error;
+    }
+  };
+
   // Process audio data from either source
   const processAudioData = async (arrayBuffer) => {
     setStatus('Decoding Ogg-Opus file...');
     
     try {
       const context = initAudioContext();
+      const metadata = await extractOpusMetadata(arrayBuffer); // Extract metadata
+
       const decoder = new OggOpusDecoder();
       const decoded = await decoder.decode(new Uint8Array(arrayBuffer));
       const audioData = decoded.channelData;
@@ -81,10 +104,17 @@ const MultiChannelOpusPlayerPoc = ({
       
       setAudioBuffer(buffer);
       
+      // Determine channel labels
+      let channelLabels = Array.from({ length: audioData.length }, (_, i) => `Channel ${i + 1}`);
+      if (metadata.comment && metadata.comment.includes("Channel order:")) {
+        const orderPart = metadata.comment.split("Channel order:")[1].trim();
+        channelLabels = orderPart.split(',').map(label => label.trim());
+      }
+      
       // Create channel controls data
-      const newChannels = Array.from({ length: audioData.length }, (_, i) => ({
+      const newChannels = channelLabels.map((label, i) => ({
         id: i,
-        label: `Channel ${i + 1}`,
+        label,
         pan: 0,
         volume: 1,
       }));
