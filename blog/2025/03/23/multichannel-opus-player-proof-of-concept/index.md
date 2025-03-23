@@ -12,7 +12,8 @@ I build a Proof of Concept (POC) Multi-Channel Opus Player for Learning Tracks
 
 Press the below "Play" button to start playback, and use the volume and panning sliders to change the mix. See the full explanation after the player.
 
-## Player
+## Shower The People - Player
+The original vocal arrangement [by Juan Garcia as recorded bei Klangbezirk](https://www.musikalspezial.de/Shower-the-people-as-recorded-bei-Klangbezirk/45264) can be found on the MusikalSpezial website.
 <MultiChannelOpusPlayerPoc sourceUrl="/experiment/output.opus" showFileBrowser={false} />
 
 <!-- truncate -->
