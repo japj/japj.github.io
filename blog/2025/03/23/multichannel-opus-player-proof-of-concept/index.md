@@ -2,7 +2,6 @@
 title: Learning Track Player - POC
 authors: japj
 tags: [choir, llms]
-draft: true
 # Display h2 to h5 headings
 toc_min_heading_level: 2
 toc_max_heading_level: 5
@@ -120,3 +119,6 @@ Implementations SHOULD NOT produce output for channels mapped to
 stream index 255 (pure silence) unless they have no other way to
 indicate the index of non-silent channels.
 :::
+
+Next step: decoding the Opus file 'manually' in the browser.<br/>
+(I am splitting this into 2 parts, since it is taking a fair bit of time to read back through my notes and write this post)
