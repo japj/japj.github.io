@@ -49,30 +49,40 @@
     }
     .channel-controls {
       margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
     }
     .channel {
       background-color: #f9f9f9;
-      padding: 15px;
-      margin-bottom: 10px;
+      padding: 12px;
       border-radius: 4px;
       border-left: 4px solid #4CAF50;
+    }
+    .channel h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      color: #333;
     }
     .slider-container {
       display: flex;
       align-items: center;
-      margin: 10px 0;
+      margin: 8px 0;
     }
     .slider-container label {
-      width: 80px;
+      width: 60px;
       font-weight: bold;
+      font-size: 12px;
     }
     .slider-container input {
       flex-grow: 1;
+      height: 4px;
     }
     .slider-value {
-      width: 50px;
+      width: 40px;
       text-align: right;
-      margin-left: 10px;
+      margin-left: 8px;
+      font-size: 12px;
     }
     .status {
       text-align: center;
@@ -107,402 +117,419 @@
       <button id="stopButton" disabled>Stop</button>
     </div>
 
-    <div id="wavesurfer-container"></div>
-    
     <div class="channel-controls" id="channelControls">
       <!-- Channel controls will be added here dynamically -->
     </div>
+
+    <div id="wavesurfer-container"></div>
   </div>
 
   <!-- Load the ogg-opus-decoder from CDN -->
   <script src="ogg-opus-decoder.js"></script>
   
   <script>
-    // Main audio context
-    let audioContext;
-    // Array of channel nodes
-    let channelNodes = [];
-    // Decoded audio data
-    let audioBuffer;
-    // Audio source node
-    let sourceNode;
-    // WaveSurfer multitrack instance
-    let multitrack;
-    // Flag to check if audio is playing
-    let isPlaying = false;
-    // Channel labels array
-    let channelLabels = [];
-    // Array to store audio URLs for cleanup
-    let audioUrls = [];
-    
-    // DOM Elements
-    const fileInput = document.getElementById('fileInput');
-    const playButton = document.getElementById('playButton');
-    const pauseButton = document.getElementById('pauseButton');
-    const stopButton = document.getElementById('stopButton');
-    const channelControls = document.getElementById('channelControls');
-    const statusElement = document.getElementById('status');
-    const { OggOpusDecoderWebWorker, OggOpusDecoder } = window["ogg-opus-decoder"];
-    
-    // Initialize audio context on user interaction
-    function initAudioContext() {
-      if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      }
-    }
-    
-    // Update button states
-    function updateButtonStates() {
-      if (!multitrack) {
-        playButton.disabled = true;
-        pauseButton.disabled = true;
-        stopButton.disabled = true;
-        return;
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      // Main audio context
+      let audioContext;
+      // Array of channel nodes
+      let channelNodes = [];
+      // Decoded audio data
+      let audioBuffer;
+      // Audio source node
+      let sourceNode;
+      // WaveSurfer multitrack instance
+      let multitrack;
+      // Flag to check if audio is playing
+      let isPlaying = false;
+      // Channel labels array
+      let channelLabels = [];
+      // Array to store audio URLs for cleanup
+      let audioUrls = [];
+      
+      // DOM Elements
+      const fileInput = document.getElementById('fileInput');
+      const playButton = document.getElementById('playButton');
+      const pauseButton = document.getElementById('pauseButton');
+      const stopButton = document.getElementById('stopButton');
+      const channelControls = document.getElementById('channelControls');
+      const statusElement = document.getElementById('status');
+      const { OggOpusDecoderWebWorker, OggOpusDecoder } = window["ogg-opus-decoder"];
+      
+      // Initialize audio context on user interaction
+      function initAudioContext() {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
       }
       
-      playButton.disabled = isPlaying;
-      pauseButton.disabled = !isPlaying;
-      stopButton.disabled = !isPlaying;
-    }
-    
-    // Initialize WaveSurfer multitrack
-    function initWaveSurfer(channelData, sampleRate) {
-      // Destroy existing instance if any
-      if (multitrack) {
-        multitrack.destroy();
-        // Clean up previous URLs
-        audioUrls.forEach(url => URL.revokeObjectURL(url));
-        audioUrls = [];
-      }
-
-      // Create tracks array from channel data
-      const tracks = channelData.map((data, index) => {
-        const url = URL.createObjectURL(new Blob([convertToWav(data, sampleRate)], { type: 'audio/wav' }));
-        audioUrls.push(url); // Store URL for cleanup
-        return {
-          id: index,
-          draggable: false,
-          startPosition: 0,
-          volume: 1,
-          options: {
-            waveColor: `hsl(${(360 / channelData.length) * index}, 87%, 49%)`,
-            progressColor: `hsl(${(360 / channelData.length) * index}, 87%, 20%)`,
-          },
-          url: url
-        };
-      });
-
-      // Create multitrack instance
-      multitrack = Multitrack.create(tracks, {
-        container: document.querySelector('#wavesurfer-container'),
-        minPxPerSec: 50,
-        cursorWidth: 2,
-        cursorColor: '#D72F21',
-        trackBackground: '#2D2D2D',
-        trackBorderColor: '#7C7C7C',
-        dragBounds: true,
-      });
-
-      // Set up event listeners
-      multitrack.on('ready', () => {
-        console.log('WaveSurfer ready');
-        updateButtonStates();
-        statusElement.textContent = 'Ready to play';
-      });
-
-      multitrack.on('play', () => {
-        console.log('WaveSurfer playing');
-        isPlaying = true;
-        updateButtonStates();
-        statusElement.textContent = 'Playing...';
-      });
-
-      multitrack.on('pause', () => {
-        console.log('WaveSurfer paused');
-        isPlaying = false;
-        updateButtonStates();
-        statusElement.textContent = 'Paused';
-      });
-
-      multitrack.on('finish', () => {
-        console.log('WaveSurfer finished');
-        isPlaying = false;
-        updateButtonStates();
-        statusElement.textContent = 'Playback ended';
-      });
-
-      multitrack.on('error', (error) => {
-        console.error('WaveSurfer error:', error);
-        statusElement.textContent = `Error: ${error.message}`;
-      });
-    }
-
-    // Convert Float32Array to WAV format
-    function convertToWav(audioData, sampleRate) {
-      const numChannels = 1;
-      const bitsPerSample = 16;
-      const bytesPerSample = bitsPerSample / 8;
-      const blockAlign = numChannels * bytesPerSample;
-      
-      const buffer = new ArrayBuffer(44 + audioData.length * bytesPerSample);
-      const view = new DataView(buffer);
-      
-      // Write WAV header
-      writeString(view, 0, 'RIFF');
-      view.setUint32(4, 36 + audioData.length * bytesPerSample, true);
-      writeString(view, 8, 'WAVE');
-      writeString(view, 12, 'fmt ');
-      view.setUint32(16, 16, true);
-      view.setUint16(20, 1, true);
-      view.setUint16(22, numChannels, true);
-      view.setUint32(24, sampleRate, true);
-      view.setUint32(28, sampleRate * blockAlign, true);
-      view.setUint16(32, blockAlign, true);
-      view.setUint16(34, bitsPerSample, true);
-      writeString(view, 36, 'data');
-      view.setUint32(40, audioData.length * bytesPerSample, true);
-      
-      // Write audio data
-      const volume = 1;
-      let offset = 44;
-      for (let i = 0; i < audioData.length; i++) {
-        const sample = Math.max(-1, Math.min(1, audioData[i]));
-        view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
-        offset += 2;
-      }
-      
-      return buffer;
-    }
-
-    function writeString(view, offset, string) {
-      for (let i = 0; i < string.length; i++) {
-        view.setUint8(offset + i, string.charCodeAt(i));
-      }
-    }
-    
-    // Load and decode audio file
-    fileInput.addEventListener('change', async (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-      
-      statusElement.textContent = 'Loading file...';
-      
-      try {
-        initAudioContext();
-        
-        // Read file as array buffer
-        const arrayBuffer = await file.arrayBuffer();
-        
-        // Try to extract metadata before decoding
-        let metadata = await extractOpusMetadata(arrayBuffer);
-
-        // Use ogg-opus-decoder to decode the file
-        if (!OggOpusDecoder) {
-          throw new Error('Ogg-Opus-Decoder library not loaded');
+      // Update button states
+      function updateButtonStates() {
+        if (!multitrack) {
+          playButton.disabled = true;
+          pauseButton.disabled = true;
+          stopButton.disabled = true;
+          return;
         }
         
-        const decoder = new OggOpusDecoder();
-        statusElement.textContent = 'Decoding Ogg-Opus file...';
+        playButton.disabled = isPlaying;
+        pauseButton.disabled = !isPlaying;
+        stopButton.disabled = !isPlaying;
+      }
+      
+      // Initialize WaveSurfer multitrack
+      function initWaveSurfer(channelData, sampleRate) {
+        console.log('Initializing WaveSurfer...');
+        // Destroy existing instance if any
+        if (multitrack) {
+          console.log('Destroying existing WaveSurfer instance...');
+          multitrack.destroy();
+          // Clean up previous URLs
+          audioUrls.forEach(url => URL.revokeObjectURL(url));
+          audioUrls = [];
+        }
+
+        // Create tracks array from channel data
+        console.log('Channel labels from metadata:', channelLabels);
+        const tracks = channelData.map((data, index) => {
+          const trackName = channelLabels[index] || `Channel ${index + 1}`;
+          console.log(`Creating track ${index}:`, {
+            metadataLabel: channelLabels[index],
+            fallbackLabel: `Channel ${index + 1}`,
+            finalName: trackName
+          });
+          const url = URL.createObjectURL(new Blob([convertToWav(data, sampleRate)], { type: 'audio/wav' }));
+          audioUrls.push(url); // Store URL for cleanup
+          return {
+            id: trackName,
+            draggable: false,
+            startPosition: 0,
+            volume: 1,
+            options: {
+              waveColor: `hsl(${(360 / channelData.length) * index}, 87%, 49%)`,
+              progressColor: `hsl(${(360 / channelData.length) * index}, 87%, 20%)`,
+            },
+            url: url
+          };
+        });
+
+        console.log('Creating WaveSurfer multitrack instance...');
+        // Create multitrack instance
+        multitrack = Multitrack.create(tracks, {
+          container: document.querySelector('#wavesurfer-container'),
+          minPxPerSec: 50,
+          cursorWidth: 2,
+          cursorColor: '#D72F21',
+          trackBackground: '#2D2D2D',
+          trackBorderColor: '#7C7C7C',
+          dragBounds: true,
+        });
+
+        // Set up event listeners
+        multitrack.on('ready', () => {
+          console.log('WaveSurfer ready');
+          updateButtonStates();
+          statusElement.textContent = 'Ready to play';
+          // Create channel controls after WaveSurfer is ready
+          createChannelControls(channelData.length);
+        });
+
+        multitrack.on('play', () => {
+          console.log('WaveSurfer playing');
+          isPlaying = true;
+          updateButtonStates();
+          statusElement.textContent = 'Playing...';
+        });
+
+        multitrack.on('pause', () => {
+          console.log('WaveSurfer paused');
+          isPlaying = false;
+          updateButtonStates();
+          statusElement.textContent = 'Paused';
+        });
+
+        multitrack.on('finish', () => {
+          console.log('WaveSurfer finished');
+          isPlaying = false;
+          updateButtonStates();
+          statusElement.textContent = 'Playback ended';
+        });
+
+        multitrack.on('error', (error) => {
+          console.error('WaveSurfer error:', error);
+          statusElement.textContent = `Error: ${error.message}`;
+        });
+
+        // Force a ready event if it hasn't fired
+        setTimeout(() => {
+          if (!multitrack.isReady) {
+            console.log('Forcing WaveSurfer ready state...');
+            multitrack.emit('ready');
+          }
+        }, 1000);
+      }
+
+      // Convert Float32Array to WAV format
+      function convertToWav(audioData, sampleRate) {
+        const numChannels = 1;
+        const bitsPerSample = 16;
+        const bytesPerSample = bitsPerSample / 8;
+        const blockAlign = numChannels * bytesPerSample;
         
-        // Decode the Opus data
-        const decoded = await decoder.decode(new Uint8Array(arrayBuffer));
+        const buffer = new ArrayBuffer(44 + audioData.length * bytesPerSample);
+        const view = new DataView(buffer);
         
-        // Get the audio data and sample rate
-        const audioData = decoded.channelData;
-        const sampleRate = decoded.sampleRate;
+        // Write WAV header
+        writeString(view, 0, 'RIFF');
+        view.setUint32(4, 36 + audioData.length * bytesPerSample, true);
+        writeString(view, 8, 'WAVE');
+        writeString(view, 12, 'fmt ');
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, numChannels, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * blockAlign, true);
+        view.setUint16(32, blockAlign, true);
+        view.setUint16(34, bitsPerSample, true);
+        writeString(view, 36, 'data');
+        view.setUint32(40, audioData.length * bytesPerSample, true);
         
-        statusElement.textContent = `Decoded ${audioData.length} channels at ${sampleRate}Hz`;
+        // Write audio data
+        const volume = 1;
+        let offset = 44;
+        for (let i = 0; i < audioData.length; i++) {
+          const sample = Math.max(-1, Math.min(1, audioData[i]));
+          view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+          offset += 2;
+        }
         
-        // Create channel labels from metadata comment or default numbering
-        if (metadata && metadata.comment && metadata.comment.includes("Channel order:")) {
-          const orderPart = metadata.comment.split("Channel order:")[1].trim();
-          channelLabels = orderPart.split(',').map(label => label.trim());
+        return buffer;
+      }
+
+      function writeString(view, offset, string) {
+        for (let i = 0; i < string.length; i++) {
+          view.setUint8(offset + i, string.charCodeAt(i));
+        }
+      }
+      
+      // Load and decode audio file
+      fileInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        statusElement.textContent = 'Loading file...';
+        
+        try {
+          initAudioContext();
+          
+          // Read file as array buffer
+          const arrayBuffer = await file.arrayBuffer();
+          
+          // Try to extract metadata before decoding
+          let metadata = await extractOpusMetadata(arrayBuffer);
+
+          // Use ogg-opus-decoder to decode the file
+          if (!OggOpusDecoder) {
+            throw new Error('Ogg-Opus-Decoder library not loaded');
+          }
+          
+          const decoder = new OggOpusDecoder();
+          statusElement.textContent = 'Decoding Ogg-Opus file...';
+          
+          // Decode the Opus data
+          const decoded = await decoder.decode(new Uint8Array(arrayBuffer));
+          
+          // Get the audio data and sample rate
+          const audioData = decoded.channelData;
+          const sampleRate = decoded.sampleRate;
+          
+          statusElement.textContent = `Decoded ${audioData.length} channels at ${sampleRate}Hz`;
+          
+          // Create channel labels from metadata comment or default numbering
+          if (metadata && metadata.comment && metadata.comment.includes("Channel order:")) {
+            const orderPart = metadata.comment.split("Channel order:")[1].trim();
+            channelLabels = orderPart.split(',').map(label => label.trim());
+          } else {
+            // Default channel labels if metadata is not available
+            channelLabels = Array.from({ length: audioData.length }, (_, i) => `Channel ${i+1}`);
+          }
+
+          statusElement.textContent = 'Initializing WaveSurfer...';
+          
+          // Initialize WaveSurfer with the decoded data
+          initWaveSurfer(audioData, sampleRate);
+          
+        } catch (error) {
+          console.error('Error decoding file:', error);
+          statusElement.textContent = `Error: ${error.message}`;
+        }
+      });
+
+      // Extract metadata from Opus file (basic implementation)
+      async function extractOpusMetadata(arrayBuffer) {
+        // This is a simplified metadata extraction
+        // A complete implementation would need to parse the Opus container format
+        
+        // Convert ArrayBuffer to string for simple text search
+        const uint8Array = new Uint8Array(arrayBuffer);
+        const textDecoder = new TextDecoder('utf-8');
+        
+        // Look for comment metadata - this is a simplified approach
+        const dataView = new DataView(arrayBuffer);
+        const possibleMetadata = {};
+        
+        // Search for common metadata identifier patterns
+        let commentOffset = -1;
+        
+        // Search for the string "comment=" in the first 10KB
+        const searchLength = Math.min(10 * 1024, uint8Array.length);
+        const searchText = textDecoder.decode(uint8Array.slice(0, searchLength));
+        
+        if (searchText.includes("DESCRIPTION=")) {
+          const commentStart = searchText.indexOf("DESCRIPTION=") + 8;
+          const commentEnd = searchText.indexOf("OggS\0", commentStart);
+          if (commentEnd > commentStart) {
+            possibleMetadata.comment = searchText.substring(commentStart, commentEnd);
+          }
+        }
+        
+        return possibleMetadata;
+      }
+      
+      // Play button event
+      playButton.addEventListener('click', () => {
+        if (!multitrack) return;
+        if (isPlaying) {
+          multitrack.pause();
+          isPlaying = false;  
+          updateButtonStates();
+          statusElement.textContent = 'Paused';
         } else {
-          // Default channel labels if metadata is not available
-          channelLabels = Array.from({ length: audioData.length }, (_, i) => `Channel ${i+1}`);
+          multitrack.play();
+          isPlaying = true;
+          updateButtonStates();
+          statusElement.textContent = 'Playing...';
         }
-
-        statusElement.textContent = 'Initializing WaveSurfer...';
-        
-        // Initialize WaveSurfer with the decoded data
-        initWaveSurfer(audioData, sampleRate);
-
-        // Create channel controls
-        createChannelControls(audioData.length);
-        
-        // Enable play button
-        updateButtonStates();
-        
-      } catch (error) {
-        console.error('Error decoding file:', error);
-        statusElement.textContent = `Error: ${error.message}`;
-      }
-    });
-
-    // Extract metadata from Opus file (basic implementation)
-    async function extractOpusMetadata(arrayBuffer) {
-      // This is a simplified metadata extraction
-      // A complete implementation would need to parse the Opus container format
+      });
       
-      // Convert ArrayBuffer to string for simple text search
-      const uint8Array = new Uint8Array(arrayBuffer);
-      const textDecoder = new TextDecoder('utf-8');
-      
-      // Look for comment metadata - this is a simplified approach
-      const dataView = new DataView(arrayBuffer);
-      const possibleMetadata = {};
-      
-      // Search for common metadata identifier patterns
-      let commentOffset = -1;
-      
-      // Search for the string "comment=" in the first 10KB
-      const searchLength = Math.min(10 * 1024, uint8Array.length);
-      const searchText = textDecoder.decode(uint8Array.slice(0, searchLength));
-      
-      if (searchText.includes("DESCRIPTION=")) {
-        const commentStart = searchText.indexOf("DESCRIPTION=") + 8;
-        const commentEnd = searchText.indexOf("OggS\0", commentStart);
-        if (commentEnd > commentStart) {
-          possibleMetadata.comment = searchText.substring(commentStart, commentEnd);
-        }
-      }
-      
-      return possibleMetadata;
-    }
-    
-    // Play button event
-    playButton.addEventListener('click', () => {
-      if (!multitrack) return;
-      if (isPlaying) {
+      // Pause button event
+      pauseButton.addEventListener('click', () => {
+        if (!multitrack) return;
+        console.log('Pausing...');
         multitrack.pause();
-        isPlaying = false;  
+        isPlaying = false;
         updateButtonStates();
         statusElement.textContent = 'Paused';
-      } else {
-        multitrack.play();
-        isPlaying = true;
+      });
+      
+      // Stop button event
+      stopButton.addEventListener('click', () => {
+        if (!multitrack) return;
+        console.log('Stopping...');
+        multitrack.pause();
+        multitrack.setTime(0);
+        isPlaying = false;
         updateButtonStates();
-        statusElement.textContent = 'Playing...';
-      }
-    });
-    
-    // Pause button event
-    pauseButton.addEventListener('click', () => {
-      if (!multitrack) return;
-      console.log('Pausing...');
-      multitrack.pause();
-      isPlaying = false;
-      updateButtonStates();
-      statusElement.textContent = 'Paused';
-    });
-    
-    // Stop button event
-    stopButton.addEventListener('click', () => {
-      if (!multitrack) return;
-      console.log('Stopping...');
-      multitrack.pause();
-      multitrack.setTime(0);
-      isPlaying = false;
-      updateButtonStates();
-      statusElement.textContent = 'Stopped';
-    });
+        statusElement.textContent = 'Stopped';
+      });
 
-    // Create channel controls for panning and volume
-    function createChannelControls(numChannels) {
-      // Clear existing controls
-      channelControls.innerHTML = '';
-      channelNodes = [];
-      
-      for (let i = 0; i < numChannels; i++) {
-        const channelDiv = document.createElement('div');
-        const channelLabel = i < channelLabels.length ? channelLabels[i] : `Channel ${i+1}`;
-        channelDiv.className = 'channel';
-        channelDiv.innerHTML = `
-          <h3>${channelLabel}</h3>
-          <div class="slider-container">
-            <label for="pan-${i}">Pan:</label>
-            <input type="range" id="pan-${i}" min="-1" max="1" step="0.1" value="0" class="pan-slider" data-channel="${i}">
-            <span class="slider-value" id="pan-value-${i}">0</span>
-          </div>
-          <div class="slider-container">
-            <label for="volume-${i}">Volume:</label>
-            <input type="range" id="volume-${i}" min="0" max="2" step="0.1" value="1" class="volume-slider" data-channel="${i}">
-            <span class="slider-value" id="volume-value-${i}">1</span>
-          </div>
-        `;
+      // Create channel controls for panning and volume
+      function createChannelControls(numChannels) {
+        // Clear existing controls
+        channelControls.innerHTML = '';
+        channelNodes = [];
         
-        channelControls.appendChild(channelDiv);
-      }
-      
-      // Add event listeners for sliders
-      document.querySelectorAll('.pan-slider').forEach(slider => {
-        slider.addEventListener('input', function() {
-          const channelIndex = parseInt(this.dataset.channel);
-          const value = parseFloat(this.value);
-          document.getElementById(`pan-value-${channelIndex}`).textContent = value.toFixed(1);
+        for (let i = 0; i < numChannels; i++) {
+          const channelDiv = document.createElement('div');
+          const channelLabel = i < channelLabels.length ? channelLabels[i] : `Channel ${i+1}`;
+          channelDiv.className = 'channel';
+          channelDiv.innerHTML = `
+            <h3>${channelLabel}</h3>
+            <div class="slider-container">
+              <label for="pan-${i}">Pan:</label>
+              <input type="range" id="pan-${i}" min="-1" max="1" step="0.1" value="0" class="pan-slider" data-channel="${i}">
+              <span class="slider-value" id="pan-value-${i}">0</span>
+            </div>
+            <div class="slider-container">
+              <label for="volume-${i}">Volume:</label>
+              <input type="range" id="volume-${i}" min="0" max="2" step="0.1" value="1" class="volume-slider" data-channel="${i}">
+              <span class="slider-value" id="volume-value-${i}">1</span>
+            </div>
+          `;
           
-          if (multitrack) {
-            multitrack.setTrackVolume(channelIndex, value);
-          }
-        });
-      });
-      
-      document.querySelectorAll('.volume-slider').forEach(slider => {
-        slider.addEventListener('input', function() {
-          const channelIndex = parseInt(this.dataset.channel);
-          const value = parseFloat(this.value);
-          document.getElementById(`volume-value-${channelIndex}`).textContent = value.toFixed(1);
-          
-          if (multitrack) {
-            multitrack.setTrackVolume(channelIndex, value);
-          }
-        });
-      });
-    }
-
-    // Clean up on page unload
-    window.addEventListener('beforeunload', () => {
-      if (multitrack) {
-        multitrack.destroy();
-        // Clean up URLs
-        audioUrls.forEach(url => URL.revokeObjectURL(url));
-        audioUrls = [];
-      }
-    });
-
-    /* optional part to directly load opus file */
-
-    // URL of the Opus file to load
-    const opusFileUrl = 'output.opus'; // Replace with the actual URL of the Opus file
-
-    // Function to load the Opus file programmatically
-    async function loadOpusFile() {
-      try {
-        const response = await fetch(opusFileUrl);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch file: ${response.statusText}`);
+          channelControls.appendChild(channelDiv);
         }
-
-        const arrayBuffer = await response.arrayBuffer();
-        const file = new File([arrayBuffer], 'file.opus', { type: 'audio/ogg' });
-
-        // Create a DataTransfer object to simulate a file input event
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(file);
-
-        // Set the file to the fileInput element
-        fileInput.files = dataTransfer.files;
-
-        // Trigger the change event to process the file
-        fileInput.dispatchEvent(new Event('change'));
-      } catch (error) {
-        console.error('Error loading Opus file:', error);
-        statusElement.textContent = `Error: ${error.message}`;
+        
+        // Add event listeners for sliders
+        document.querySelectorAll('.pan-slider').forEach(slider => {
+          slider.addEventListener('input', function() {
+            const channelIndex = parseInt(this.dataset.channel);
+            const value = parseFloat(this.value);
+            document.getElementById(`pan-value-${channelIndex}`).textContent = value.toFixed(1);
+            
+            if (multitrack) {
+              multitrack.setTrackVolume(channelIndex, value);
+            }
+          });
+        });
+        
+        document.querySelectorAll('.volume-slider').forEach(slider => {
+          slider.addEventListener('input', function() {
+            const channelIndex = parseInt(this.dataset.channel);
+            const value = parseFloat(this.value);
+            document.getElementById(`volume-value-${channelIndex}`).textContent = value.toFixed(1);
+            
+            if (multitrack) {
+              multitrack.setTrackVolume(channelIndex, value);
+            }
+          });
+        });
       }
-    }
 
-    // Call the function to load the file when the page loads
-    window.addEventListener('DOMContentLoaded', loadOpusFile);
+      // Clean up on page unload
+      window.addEventListener('beforeunload', () => {
+        if (multitrack) {
+          multitrack.destroy();
+          // Clean up URLs
+          audioUrls.forEach(url => URL.revokeObjectURL(url));
+          audioUrls = [];
+        }
+      });
+
+      /* optional part to directly load opus file */
+
+      // URL of the Opus file to load
+      const opusFileUrl = 'output.opus'; // Replace with the actual URL of the Opus file
+
+      // Function to load the Opus file programmatically
+      async function loadOpusFile() {
+        try {
+          const response = await fetch(opusFileUrl);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch file: ${response.statusText}`);
+          }
+
+          const arrayBuffer = await response.arrayBuffer();
+          const file = new File([arrayBuffer], 'file.opus', { type: 'audio/ogg' });
+
+          // Create a DataTransfer object to simulate a file input event
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+
+          // Set the file to the fileInput element
+          fileInput.files = dataTransfer.files;
+
+          // Trigger the change event to process the file
+          fileInput.dispatchEvent(new Event('change'));
+        } catch (error) {
+          console.error('Error loading Opus file:', error);
+          statusElement.textContent = `Error: ${error.message}`;
+        }
+      }
+
+      // Call the function to load the file when the page loads
+      loadOpusFile();
+    });
   </script>
 </body>
 </html>
