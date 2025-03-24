@@ -7,8 +7,7 @@
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      max-width: 800px;
-      margin: 0 auto;
+      margin: 0;
       padding: 20px;
       background-color: #f5f5f5;
     }
@@ -81,14 +80,17 @@
       font-style: italic;
       color: #666;
     }
-    .visualizer {
+    #wavesurfer-container {
       width: 100%;
-      height: 100px;
-      background-color: #222;
+      height: 200px;
+      background-color: #2d2d2d;
       margin-top: 20px;
       border-radius: 4px;
     }
   </style>
+  <!-- WaveSurfer dependencies -->
+  <script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js"></script>
+  <script src="https://unpkg.com/wavesurfer-multitrack/dist/multitrack.min.js"></script>
 </head>
 <body>
   <div class="container">
@@ -105,7 +107,7 @@
       <button id="stopButton" disabled>Stop</button>
     </div>
 
-    <canvas id="visualizer" class="visualizer"></canvas>
+    <div id="wavesurfer-container"></div>
     
     <div class="channel-controls" id="channelControls">
       <!-- Channel controls will be added here dynamically -->
@@ -124,12 +126,14 @@
     let audioBuffer;
     // Audio source node
     let sourceNode;
-    // Analyser nodes for visualization
-    let analyserNodes = [];
+    // WaveSurfer multitrack instance
+    let multitrack;
     // Flag to check if audio is playing
     let isPlaying = false;
-    // Animation frame ID
-    let animationId;
+    // Channel labels array
+    let channelLabels = [];
+    // Array to store audio URLs for cleanup
+    let audioUrls = [];
     
     // DOM Elements
     const fileInput = document.getElementById('fileInput');
@@ -138,8 +142,6 @@
     const stopButton = document.getElementById('stopButton');
     const channelControls = document.getElementById('channelControls');
     const statusElement = document.getElementById('status');
-    const visualizer = document.getElementById('visualizer');
-    const visualizerCtx = visualizer.getContext('2d');
     const { OggOpusDecoderWebWorker, OggOpusDecoder } = window["ogg-opus-decoder"];
     
     // Initialize audio context on user interaction
@@ -151,9 +153,131 @@
     
     // Update button states
     function updateButtonStates() {
-      playButton.disabled = !audioBuffer || isPlaying;
+      if (!multitrack) {
+        playButton.disabled = true;
+        pauseButton.disabled = true;
+        stopButton.disabled = true;
+        return;
+      }
+      
+      playButton.disabled = isPlaying;
       pauseButton.disabled = !isPlaying;
       stopButton.disabled = !isPlaying;
+    }
+    
+    // Initialize WaveSurfer multitrack
+    function initWaveSurfer(channelData, sampleRate) {
+      // Destroy existing instance if any
+      if (multitrack) {
+        multitrack.destroy();
+        // Clean up previous URLs
+        audioUrls.forEach(url => URL.revokeObjectURL(url));
+        audioUrls = [];
+      }
+
+      // Create tracks array from channel data
+      const tracks = channelData.map((data, index) => {
+        const url = URL.createObjectURL(new Blob([convertToWav(data, sampleRate)], { type: 'audio/wav' }));
+        audioUrls.push(url); // Store URL for cleanup
+        return {
+          id: index,
+          draggable: false,
+          startPosition: 0,
+          volume: 1,
+          options: {
+            waveColor: `hsl(${(360 / channelData.length) * index}, 87%, 49%)`,
+            progressColor: `hsl(${(360 / channelData.length) * index}, 87%, 20%)`,
+          },
+          url: url
+        };
+      });
+
+      // Create multitrack instance
+      multitrack = Multitrack.create(tracks, {
+        container: document.querySelector('#wavesurfer-container'),
+        minPxPerSec: 50,
+        cursorWidth: 2,
+        cursorColor: '#D72F21',
+        trackBackground: '#2D2D2D',
+        trackBorderColor: '#7C7C7C',
+        dragBounds: true,
+      });
+
+      // Set up event listeners
+      multitrack.on('ready', () => {
+        console.log('WaveSurfer ready');
+        updateButtonStates();
+        statusElement.textContent = 'Ready to play';
+      });
+
+      multitrack.on('play', () => {
+        console.log('WaveSurfer playing');
+        isPlaying = true;
+        updateButtonStates();
+        statusElement.textContent = 'Playing...';
+      });
+
+      multitrack.on('pause', () => {
+        console.log('WaveSurfer paused');
+        isPlaying = false;
+        updateButtonStates();
+        statusElement.textContent = 'Paused';
+      });
+
+      multitrack.on('finish', () => {
+        console.log('WaveSurfer finished');
+        isPlaying = false;
+        updateButtonStates();
+        statusElement.textContent = 'Playback ended';
+      });
+
+      multitrack.on('error', (error) => {
+        console.error('WaveSurfer error:', error);
+        statusElement.textContent = `Error: ${error.message}`;
+      });
+    }
+
+    // Convert Float32Array to WAV format
+    function convertToWav(audioData, sampleRate) {
+      const numChannels = 1;
+      const bitsPerSample = 16;
+      const bytesPerSample = bitsPerSample / 8;
+      const blockAlign = numChannels * bytesPerSample;
+      
+      const buffer = new ArrayBuffer(44 + audioData.length * bytesPerSample);
+      const view = new DataView(buffer);
+      
+      // Write WAV header
+      writeString(view, 0, 'RIFF');
+      view.setUint32(4, 36 + audioData.length * bytesPerSample, true);
+      writeString(view, 8, 'WAVE');
+      writeString(view, 12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, numChannels, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * blockAlign, true);
+      view.setUint16(32, blockAlign, true);
+      view.setUint16(34, bitsPerSample, true);
+      writeString(view, 36, 'data');
+      view.setUint32(40, audioData.length * bytesPerSample, true);
+      
+      // Write audio data
+      const volume = 1;
+      let offset = 44;
+      for (let i = 0; i < audioData.length; i++) {
+        const sample = Math.max(-1, Math.min(1, audioData[i]));
+        view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+        offset += 2;
+      }
+      
+      return buffer;
+    }
+
+    function writeString(view, offset, string) {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+      }
     }
     
     // Load and decode audio file
@@ -189,27 +313,20 @@
         
         statusElement.textContent = `Decoded ${audioData.length} channels at ${sampleRate}Hz`;
         
-        // Create an audio buffer from the decoded data
-        audioBuffer = audioContext.createBuffer(
-          audioData.length,
-          audioData[0].length,
-          sampleRate
-        );
-
         // Create channel labels from metadata comment or default numbering
         if (metadata && metadata.comment && metadata.comment.includes("Channel order:")) {
           const orderPart = metadata.comment.split("Channel order:")[1].trim();
           channelLabels = orderPart.split(',').map(label => label.trim());
         } else {
           // Default channel labels if metadata is not available
-          channelLabels = Array.from({ length: audioBuffer.numberOfChannels }, (_, i) => `Channel ${i+1}`);
+          channelLabels = Array.from({ length: audioData.length }, (_, i) => `Channel ${i+1}`);
         }
+
+        statusElement.textContent = 'Initializing WaveSurfer...';
         
-        // Copy the channel data to the audio buffer
-        for (let i = 0; i < audioData.length; i++) {
-          audioBuffer.copyToChannel(audioData[i], i);
-        }
-        
+        // Initialize WaveSurfer with the decoded data
+        initWaveSurfer(audioData, sampleRate);
+
         // Create channel controls
         createChannelControls(audioData.length);
         
@@ -253,12 +370,48 @@
       return possibleMetadata;
     }
     
+    // Play button event
+    playButton.addEventListener('click', () => {
+      if (!multitrack) return;
+      if (isPlaying) {
+        multitrack.pause();
+        isPlaying = false;  
+        updateButtonStates();
+        statusElement.textContent = 'Paused';
+      } else {
+        multitrack.play();
+        isPlaying = true;
+        updateButtonStates();
+        statusElement.textContent = 'Playing...';
+      }
+    });
+    
+    // Pause button event
+    pauseButton.addEventListener('click', () => {
+      if (!multitrack) return;
+      console.log('Pausing...');
+      multitrack.pause();
+      isPlaying = false;
+      updateButtonStates();
+      statusElement.textContent = 'Paused';
+    });
+    
+    // Stop button event
+    stopButton.addEventListener('click', () => {
+      if (!multitrack) return;
+      console.log('Stopping...');
+      multitrack.pause();
+      multitrack.setTime(0);
+      isPlaying = false;
+      updateButtonStates();
+      statusElement.textContent = 'Stopped';
+    });
+
     // Create channel controls for panning and volume
     function createChannelControls(numChannels) {
       // Clear existing controls
       channelControls.innerHTML = '';
       channelNodes = [];
-      analyserNodes = [];
       
       for (let i = 0; i < numChannels; i++) {
         const channelDiv = document.createElement('div');
@@ -288,8 +441,8 @@
           const value = parseFloat(this.value);
           document.getElementById(`pan-value-${channelIndex}`).textContent = value.toFixed(1);
           
-          if (channelNodes[channelIndex]) {
-            channelNodes[channelIndex].pan.value = value;
+          if (multitrack) {
+            multitrack.setTrackVolume(channelIndex, value);
           }
         });
       });
@@ -300,166 +453,20 @@
           const value = parseFloat(this.value);
           document.getElementById(`volume-value-${channelIndex}`).textContent = value.toFixed(1);
           
-          if (channelNodes[channelIndex]) {
-            channelNodes[channelIndex].gain.value = value;
+          if (multitrack) {
+            multitrack.setTrackVolume(channelIndex, value);
           }
         });
       });
     }
-    
-    // Function to setup and start the audio playback
-    function setupAudioNodes() {
-      if (isPlaying) return;
-      
-      // Create a source node
-      sourceNode = audioContext.createBufferSource();
-      sourceNode.buffer = audioBuffer;
-      
-      // Create channel splitter
-      const splitter = audioContext.createChannelSplitter(audioBuffer.numberOfChannels);
-      
-      // Connect source to splitter
-      sourceNode.connect(splitter);
-      
-      // Create channel nodes for each channel with panning and gain control
-      for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
-        // Create a gain node for the channel
-        const gainNode = audioContext.createGain();
-        gainNode.gain.value = parseFloat(document.getElementById(`volume-${i}`).value);
-        
-        // Create a panner node for the channel
-        const pannerNode = audioContext.createStereoPanner();
-        pannerNode.pan.value = parseFloat(document.getElementById(`pan-${i}`).value);
-        
-        // Create an analyser node for visualization
-        const analyserNode = audioContext.createAnalyser();
-        analyserNode.fftSize = 256;
-        
-        // Connect the nodes
-        splitter.connect(gainNode, i);
-        gainNode.connect(pannerNode);
-        pannerNode.connect(analyserNode);
-        analyserNode.connect(audioContext.destination);
-        
-        // Store the nodes for later access
-        channelNodes[i] = {
-          gain: gainNode.gain,
-          pan: pannerNode.pan
-        };
-        
-        analyserNodes[i] = analyserNode;
-      }
-      
-      // Start visualization
-      visualize();
-    }
-    
-    // Play button event
-    playButton.addEventListener('click', () => {
-      if (!audioBuffer) return;
-      
-      initAudioContext();
-      
-      // If the audio context is suspended (e.g., by browser autoplay policy), resume it
-      if (audioContext.state === 'suspended') {
-        audioContext.resume();
-      }
-      
-      setupAudioNodes();
-      
-      // If we're resuming after a pause, we don't need to create a new source
-      if (!isPlaying) {
-        sourceNode.start(0);
-        isPlaying = true;
-        updateButtonStates();
-        visualize();
-        
-        // When playback ends
-        sourceNode.onended = () => {
-          isPlaying = false;
-          updateButtonStates();
-          cancelAnimationFrame(animationId);
-          statusElement.textContent = 'Playback ended';
-        };
-        
-        statusElement.textContent = 'Playing...';
-      }
-    });
-    
-    // Pause button event
-    pauseButton.addEventListener('click', () => {
-      if (isPlaying) {
-        audioContext.suspend();
-        isPlaying = false;
-        updateButtonStates();
-        cancelAnimationFrame(animationId);
-        statusElement.textContent = 'Paused';
-      }
-    });
-    
-    // Stop button event
-    stopButton.addEventListener('click', () => {
-      if (isPlaying) {
-        sourceNode.stop();
-        isPlaying = false;
-        updateButtonStates();
-        cancelAnimationFrame(animationId);
-        statusElement.textContent = 'Stopped';
-      }
-    });
-    
-    // Visualize the audio
-    function visualize() {
-      // Set canvas size
-      visualizer.width = visualizer.clientWidth;
-      visualizer.height = visualizer.clientHeight;
-      
-      const WIDTH = visualizer.width;
-      const HEIGHT = visualizer.height;
-      
-      // Clear the canvas
-      visualizerCtx.clearRect(0, 0, WIDTH, HEIGHT);
-      
-      if (!isPlaying) return;
-      
-      // Draw each channel's visualization
-      const channelWidth = WIDTH / analyserNodes.length;
-      
-      for (let i = 0; i < analyserNodes.length; i++) {
-        const analyser = analyserNodes[i];
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-        
-        // Get frequency data
-        analyser.getByteFrequencyData(dataArray);
-        
-        // Calculate bar width
-        const barWidth = channelWidth / bufferLength;
-        let x = i * channelWidth;
-        
-        // Use different hues for different channels
-        const hue = (360 / analyserNodes.length) * i;
-        
-        // Draw bars
-        for (let j = 0; j < bufferLength; j++) {
-          const barHeight = (dataArray[j] / 255) * HEIGHT;
-          
-          visualizerCtx.fillStyle = `hsla(${hue}, 100%, 50%, 0.7)`;
-          visualizerCtx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
-          
-          x += barWidth;
-        }
-      }
-      
-      // Call next frame
-      animationId = requestAnimationFrame(visualize);
-    }
-    
-    // Handle resize
-    window.addEventListener('resize', () => {
-      if (isPlaying) {
-        visualizer.width = visualizer.clientWidth;
-        visualizer.height = visualizer.clientHeight;
+
+    // Clean up on page unload
+    window.addEventListener('beforeunload', () => {
+      if (multitrack) {
+        multitrack.destroy();
+        // Clean up URLs
+        audioUrls.forEach(url => URL.revokeObjectURL(url));
+        audioUrls = [];
       }
     });
 
@@ -496,7 +503,6 @@
 
     // Call the function to load the file when the page loads
     window.addEventListener('DOMContentLoaded', loadOpusFile);
-
   </script>
 </body>
 </html>
