@@ -452,7 +452,7 @@
             </div>
             <div class="slider-container">
               <label for="volume-${i}">Volume:</label>
-              <input type="range" id="volume-${i}" min="0" max="2" step="0.1" value="1" class="volume-slider" data-channel="${i}">
+              <input type="range" id="volume-${i}" min="0" max="1" step="0.1" value="1" class="volume-slider" data-channel="${i}">
               <span class="slider-value" id="volume-value-${i}">1</span>
             </div>
           `;
@@ -468,7 +468,9 @@
             document.getElementById(`pan-value-${channelIndex}`).textContent = value.toFixed(1);
             
             if (multitrack) {
-              multitrack.setTrackVolume(channelIndex, value);
+              console.log(`Setting pan for track ${channelIndex} to ${value}`);
+              // Pan is handled through the track's options
+              multitrack.tracks[channelIndex].options.pan = value;
             }
           });
         });
@@ -476,10 +478,11 @@
         document.querySelectorAll('.volume-slider').forEach(slider => {
           slider.addEventListener('input', function() {
             const channelIndex = parseInt(this.dataset.channel);
-            const value = parseFloat(this.value);
+            const value = Math.min(1, Math.max(0, parseFloat(this.value))); // Clamp between 0 and 1
             document.getElementById(`volume-value-${channelIndex}`).textContent = value.toFixed(1);
             
             if (multitrack) {
+              console.log(`Setting volume for track ${channelIndex} to ${value}`);
               multitrack.setTrackVolume(channelIndex, value);
             }
           });
