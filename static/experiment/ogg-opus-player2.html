@@ -84,6 +84,12 @@
       margin-left: 8px;
       font-size: 12px;
     }
+    /* Hide panning controls */
+    .slider-container:has(label[for^="pan-"]),
+    .slider-container:has(input[id^="pan-"]),
+    .slider-container:has(span[id^="pan-value-"]) {
+      display: none;
+    }
     .status {
       text-align: center;
       margin: 10px 0;
@@ -178,11 +184,14 @@
       }
       
       // Initialize WaveSurfer multitrack
-      function initWaveSurfer(channelData, sampleRate) {
+      async function initWaveSurfer(channelData, sampleRate) {
         console.log('Initializing WaveSurfer...');
+        statusElement.textContent = 'Initializing WaveSurfer...';
+        
         // Destroy existing instance if any
         if (multitrack) {
           console.log('Destroying existing WaveSurfer instance...');
+          statusElement.textContent = 'Cleaning up previous instance...';
           multitrack.destroy();
           // Clean up previous URLs
           audioUrls.forEach(url => URL.revokeObjectURL(url));
@@ -191,16 +200,25 @@
 
         // Create tracks array from channel data
         console.log('Channel labels from metadata:', channelLabels);
-        const tracks = channelData.map((data, index) => {
+        statusElement.textContent = 'Creating audio tracks...';
+        
+        // Create tracks asynchronously
+        const tracks = [];
+        for (let index = 0; index < channelData.length; index++) {
           const trackName = channelLabels[index] || `Channel ${index + 1}`;
+          statusElement.textContent = `Preparing track ${index + 1}/${channelData.length}: ${trackName}`;
           console.log(`Creating track ${index}:`, {
             metadataLabel: channelLabels[index],
             fallbackLabel: `Channel ${index + 1}`,
             finalName: trackName
           });
-          const url = URL.createObjectURL(new Blob([convertToWav(data, sampleRate)], { type: 'audio/wav' }));
+          
+          // Add a small delay to allow UI updates
+          await new Promise(resolve => setTimeout(resolve, 10));
+          
+          const url = URL.createObjectURL(new Blob([convertToWav(channelData[index], sampleRate)], { type: 'audio/wav' }));
           audioUrls.push(url); // Store URL for cleanup
-          return {
+          tracks.push({
             id: trackName,
             draggable: false,
             startPosition: 0,
@@ -210,10 +228,12 @@
               progressColor: `hsl(${(360 / channelData.length) * index}, 87%, 20%)`,
             },
             url: url
-          };
-        });
+          });
+        }
 
         console.log('Creating WaveSurfer multitrack instance...');
+        statusElement.textContent = 'Setting up WaveSurfer interface...';
+        
         // Create multitrack instance
         multitrack = Multitrack.create(tracks, {
           container: document.querySelector('#wavesurfer-container'),
@@ -446,11 +466,6 @@
           channelDiv.innerHTML = `
             <h3>${channelLabel}</h3>
             <div class="slider-container">
-              <label for="pan-${i}">Pan:</label>
-              <input type="range" id="pan-${i}" min="-1" max="1" step="0.1" value="0" class="pan-slider" data-channel="${i}">
-              <span class="slider-value" id="pan-value-${i}">0</span>
-            </div>
-            <div class="slider-container">
               <label for="volume-${i}">Volume:</label>
               <input type="range" id="volume-${i}" min="0" max="1" step="0.1" value="1" class="volume-slider" data-channel="${i}">
               <span class="slider-value" id="volume-value-${i}">1</span>
@@ -461,20 +476,6 @@
         }
         
         // Add event listeners for sliders
-        document.querySelectorAll('.pan-slider').forEach(slider => {
-          slider.addEventListener('input', function() {
-            const channelIndex = parseInt(this.dataset.channel);
-            const value = parseFloat(this.value);
-            document.getElementById(`pan-value-${channelIndex}`).textContent = value.toFixed(1);
-            
-            if (multitrack) {
-              console.log(`Setting pan for track ${channelIndex} to ${value}`);
-              // Pan is handled through the track's options
-              multitrack.tracks[channelIndex].options.pan = value;
-            }
-          });
-        });
-        
         document.querySelectorAll('.volume-slider').forEach(slider => {
           slider.addEventListener('input', function() {
             const channelIndex = parseInt(this.dataset.channel);
