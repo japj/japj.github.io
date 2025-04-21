@@ -15,7 +15,7 @@ This post shows how to change the Emscripten TTY logic to get console output to 
 
 ## Introduction
 
-This is part of my work on creating a [Player for Learning Tracks](../../../03/23/multichannel-opus-player-proof-of-concept/). 
+This is part of my work on creating a [Player for Learning Tracks](/blog/2025/03/23/multichannel-opus-player-proof-of-concept/index.md). 
 
 Next to an actual player, I also need a way to encode the audio. Even though I used
 the commandline version of FFmpeg locally to generate my first example file, I want something
