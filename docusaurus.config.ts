@@ -155,6 +155,12 @@ const config: Config = {
 
   markdown: {
     mermaid: true
+  },
+
+  // Configuration for faster builds
+  future: {
+    v4: true,
+    experimental_faster: true,
   }
 };
 
