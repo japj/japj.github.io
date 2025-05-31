@@ -143,15 +143,32 @@ const config: Config = {
           enableInDevelopment: false, // optional
           person_profiles: 'identified_only' // or 'always' to create profiles for anonymous users as well
       }],
-      [
-        require.resolve("@cmfcmf/docusaurus-search-local"),
-        {
-          // Options here
-        },
-      ],
   ],
 
-  themes: ['@docusaurus/theme-mermaid'],
+  themes: [
+    '@docusaurus/theme-mermaid',
+    [require.resolve("@easyops-cn/docusaurus-search-local"),
+      /** @type {import("@easyops-cn/docusaurus-search-local").PluginOptions} */
+      ({
+        // ... Your options.
+        // `hashed` is recommended as long-term-cache of index file is possible.
+        hashed: true,
+        indexDocs: true,
+        indexBlog: true,
+        blogRouteBasePath: '/',
+        docsRouteBasePath: '/docs',
+        blogDir: './',
+        highlightSearchTermsOnTargetPage: true,
+
+
+        // For Docs using Chinese, it is recomended to set:
+        // language: ["en", "zh"],
+
+        // If you're using `noIndex: true`, set `forceIgnoreNoIndex` to enable local index:
+        // forceIgnoreNoIndex: true,
+      }),
+    ],
+  ],
 
   markdown: {
     mermaid: true
