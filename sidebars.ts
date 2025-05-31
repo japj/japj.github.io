@@ -16,6 +16,7 @@ const sidebars: SidebarsConfig = {
   // By default, Docusaurus generates a sidebar from the docs folder structure
   tutorialSidebar: [
     "introduction",
+    "news",
     "overview",
     "examples",
     {
@@ -60,7 +61,8 @@ const sidebars: SidebarsConfig = {
           ]
         }
       ]
-    }
+    },
+    "ideas"
   ],
 };
 
