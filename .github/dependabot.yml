@@ -22,11 +22,6 @@ updates:
       - dependencies
       - npm
     open-pull-requests-limit: 5
-    ignore:
-      - dependency-name: "react"
-        versions: ["19.x"] # docusaurus-search-local does not yet work with react 19
-      - dependency-name: "react-dom"
-        versions: ["19.x"] # docusaurus-search-local does not yet work with react 19
 
   - package-ecosystem: "github-actions"
     directory: "/" # Location of GitHub Actions workflows
