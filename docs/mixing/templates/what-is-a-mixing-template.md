@@ -2,11 +2,11 @@
 
 With a mixing template you can save time by preparing the different mixes that you want to have once and then use that each time you need to create new learning tracks. 
 
-A mixing template can be setup in a DAW and consists out of 3 parts:
+A mixing template can be set up in a DAW and consists of 3 parts:
 
 - Input Tracks
 
-  These are the original midi, or (vocal) audio tracks that you generated before.
+  These are the original MIDI, or (vocal) audio tracks that you generated before.
 
 - Output Tracks
 

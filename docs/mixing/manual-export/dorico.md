@@ -11,7 +11,7 @@ The Dorico help pages have a whole section on [exporting audio files](https://ww
 Dorico supports exporting the following default (types of) mixes:
 
 - __Total__: This is the "Flow" to export
-- __Part alone__: These are the seperate "Players" to export
+- __Part alone__: These are the separate "Players" to export
 
 ![Dorico Export Audio](dorico-export-audio.png)
 
@@ -19,8 +19,8 @@ Dorico supports exporting the following default (types of) mixes:
 If you turn on the Metronome (Click) before exporting it will be included in the audio files.
 :::
 
-Dorico will use whatever sound you have setup for the different parts in the export.
-If you do not like the build-in choir (ah) sounds you can choose to use a different sound for playback.
+Dorico will use whatever sound you have set up for the different parts in the export.
+If you do not like the built-in choir (ah) sounds you can choose to use a different sound for playback.
 
 :::note
 Choosing sounds is a topic that I want to write about in another section of this guide.
