@@ -4,7 +4,7 @@ This page will summarize (recent) changes that have been done.
 
 ## 2025-05-31
 
-- Fixed some spelling errors in [Dorico](dorico.md) and [What is a mixing template](templates/what-is-a-mixing-template.md).
+- Fixed some spelling errors in [Dorico](./mixing/manual-export/dorico.md) and [What is a mixing template](./mixing/templates/what-is-a-mixing-template.md).
 - Added the [Ideas](ideas.md) page with ideas for future content.
 - Added the [News](./news.md) page with an overview of recent changes.
 
