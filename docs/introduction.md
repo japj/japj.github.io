@@ -10,17 +10,16 @@ You can see [my notes from the Vocal Pop & Jazz Days 2024](https://github.com/ja
 
 It has been a while since, but I finally started writing and I will use these notes as an input.
 
-Feel free to reach out if you have any questions or topics that you find interesting.
-
 ## What this guide is and isn't
 
 This is not a guide for writing your own vocal arrangements. It is also not about learning to sing.
 
 The goal of this guide is to give you knowledge and practical tips to create your own vocal learning tracks efficiently.
 
-You will be able to create Vocal Learning Tracks for the songs you are singing in your choir, tailored to your needs. 
+You will be able to create Vocal Learning Tracks for the songs you are singing in your choir, tailored to your needs.
 
 Every choir is different. Every song is different. Every arrangement is different.
+There is no "right" or "wrong" way, use the information from this guide as building blocks for whatever works for you.
 
 Before deciding to create your own Vocal Learning Tracks, I would suggest looking if someone is already selling them. This saves you time that you can spend on something else and helps another artist out by buying something from their catalog.
 
@@ -30,7 +29,7 @@ Here are some of the topics I want to share in this guide:
 
 - Why you need vocal learning tracks
 - What variations of vocal learning tracks are possible and make sense
-- How to get sheetmusic into a notation program
+- How to get (paper) sheetmusic into a notation program
 - How to mix learning tracks efficiently
 - How to use a vocal synthesizer for learning tracks
 
@@ -43,3 +42,7 @@ Although I started as an instrumentalist (playing trumpet, trombone and bass gui
 You can find a sneak peek at my current workflow at [my blogpost about my step for creating learning tracks](../2025/02/23/my-steps-for-creating-choir-learning-tracks/)
 
 By creating vocal learning tracks I combine two of my passions: computers and music.
+
+## How to contact me
+
+Feel free to reach out to me at jeroen.janssen@gmail.com or [@japj.bsky.social](https://bsky.app/profile/japj.bsky.social) if you have any questions or topics that you find interesting related to creating vocal learning tracks.

@@ -2,6 +2,11 @@
 
 This page will summarize (recent) changes that have been done.
 
+## 2025-06-01
+
+- Added [How to contact me](./introduction.md#how-to-contact-me) with contact information.
+- Updated [Ideas](./ideas.md) with more content ideas.
+
 ## 2025-05-31
 
 - Fixed some spelling errors in [Dorico](./mixing/manual-export/dorico.md) and [What is a mixing template](./mixing/templates/what-is-a-mixing-template.md).
