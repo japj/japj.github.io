@@ -59,7 +59,7 @@ const config: Config = {
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
           showLastUpdateTime: true,
-          blogSidebarCount: 'ALL',
+          blogSidebarCount: 0,
           blogTitle: 'Blog',
           postsPerPage: 5,
         },
