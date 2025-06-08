@@ -61,6 +61,7 @@ const config: Config = {
           showLastUpdateTime: true,
           blogSidebarCount: 'ALL',
           blogTitle: 'Blog',
+          postsPerPage: 5,
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -183,7 +184,7 @@ const config: Config = {
   // Configuration for faster builds
   future: {
     v4: true,
-    experimental_faster: true,
+    experimental_faster: true
   }
 };
 
