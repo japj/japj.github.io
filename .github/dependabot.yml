@@ -16,8 +16,6 @@ updates:
       interval: "weekly"
     assignees:
       - japj
-    reviewers:
-      - japj
     labels:
       - dependencies
       - npm
@@ -29,8 +27,6 @@ updates:
       interval: "weekly"
     assignees:
       - japj
-    reviewers:
-      - japj
     labels:
       - dependencies
       - github-actions
@@ -41,9 +37,7 @@ updates:
     schedule:
       interval: "weekly"
     assignees:
-      - japj
-    reviewers:
-      - japj
+      - jap
     labels:
       - dependencies
       - devcontainer
