@@ -1,8 +1,8 @@
 import React from 'react';
-import ReactPlayer from 'react-player/youtube';
+import ReactPlayer from 'react-player';
 
 const YouTubeEmbed = ({ id }) => (
-  <ReactPlayer url={`https://www.youtube.com/watch?v=${id}`} controls />
+  <ReactPlayer src={`https://www.youtube.com/watch?v=${id}`} controls />
 );
 
 export default YouTubeEmbed;
