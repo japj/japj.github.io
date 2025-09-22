@@ -24,7 +24,7 @@
     "@giscus/react": "^3.1.0",
     "@mdx-js/react": "^3.1.1",
     "clsx": "^2.1.1",
-    "ogg-opus-decoder": "^1.7.0",
+    "ogg-opus-decoder": "^1.7.1",
     "posthog-docusaurus": "^2.0.4",
     "prism-react-renderer": "^2.4.1",
     "react-dom": "^19.0.0",
