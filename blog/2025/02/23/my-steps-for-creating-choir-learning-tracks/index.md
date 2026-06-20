@@ -69,7 +69,7 @@ mindmap
 ```
 
 Here are the steps I take and the software I am using.
-<!-- truncate -->
+{/* truncate */}
 
 ## Steps
 

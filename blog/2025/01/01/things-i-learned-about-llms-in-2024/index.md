@@ -7,7 +7,7 @@ tags: [llms]
 I was reading [Simon Willison - Things we learned about LLMs in 2024](https://simonwillison.net/2024/Dec/31/llms-in-2024/)
 and it made me realize this would be a good moment to reflect on my own learnings on LLMs in 2024.
 
-<!-- truncate -->
+{/* truncate */}
 
 1. LLMs were used in 3/4 of the four final/graduation projects at Fontys Venlo that I help review & evaluate in the first half of the year.
    

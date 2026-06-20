@@ -16,7 +16,7 @@ Press the below "Play" button to start playback, and use the volume and panning 
 The original vocal arrangement [by Juan Garcia as recorded bei Klangbezirk](https://www.musikalspezial.de/Shower-the-people-as-recorded-bei-Klangbezirk/45264) can be found on the MusikalSpezial website.
 <MultiChannelOpusPlayerPoc sourceUrl="/experiment/output.opus" showFileBrowser={false} />
 
-<!-- truncate -->
+{/* truncate */}
 
 ## Overview
 
