@@ -20,9 +20,6 @@ const config: Config = {
   organizationName: 'japj', // Usually your GitHub org/user name.
   projectName: 'japj.github.io', // Usually your repo name.
 
-  onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
-
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
@@ -178,13 +175,16 @@ const config: Config = {
   ],
 
   markdown: {
-    mermaid: true
+    mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+    }
   },
 
   // Configuration for faster builds
   future: {
     v4: true,
-    experimental_faster: true
+    faster: true
   }
 };
 
