@@ -5,7 +5,7 @@ tags: [docusaurus]
 ---
 
 This is a restart of my personal website/blog.
-<!-- truncate -->
+{/* truncate */}
 
 Inspired by:
 - the book [Writing for developers](https://www.manning.com/books/writing-for-developers).

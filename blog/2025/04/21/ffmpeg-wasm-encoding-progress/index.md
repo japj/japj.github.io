@@ -11,7 +11,7 @@ This post shows how to change the Emscripten TTY logic to get console output to 
 
 ![](./FFmpeg_console_progress.gif)
 
-<!-- truncate -->
+{/* truncate */}
 
 ## Introduction
 

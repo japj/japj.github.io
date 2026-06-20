@@ -8,7 +8,7 @@ I tried following the instructions from [Alex Fornuto - Adding Comments to Docus
 but ran into some issues (including applying feedback from the comments).
 
 Here is what I had to do to get it working for my (v3.6) Docusaurus:
-<!-- truncate -->
+{/* truncate */}
 
 1. install @giscus/react: `npm -i @giscus/react`
 2. follow instructions from [http://giscus.app](https://giscus.app) to configure giscus for your repository.

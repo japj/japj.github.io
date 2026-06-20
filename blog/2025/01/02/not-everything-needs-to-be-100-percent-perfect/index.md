@@ -9,7 +9,7 @@ Perfectionism - it can be a blessing and a curse.
 Working in the software industry for over 25 years now, my perfectionism traits have both helped and obstructed me through the years.
 Here are some things I have learned:
 
-<!-- truncate -->
+{/* truncate */}
 
 1. Perfectionism can help with creating high quality products. 
 

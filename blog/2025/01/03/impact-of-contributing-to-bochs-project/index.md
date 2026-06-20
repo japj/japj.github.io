@@ -9,7 +9,7 @@ Typically driven by running into an issue or a missing feature and an interest a
 This is a great way to learn to work together and learn from other people, improve your own skills and give back to a project in a useful way.
 
 And you also might leave behind something that has an unexpected impact...
-<!-- truncate -->
+{/* truncate */}
 
 Somewhere around 1997/1998/1999 I was active in the Dutch [Demoscene](https://en.wikipedia.org/wiki/Demoscene) with a small group.
 
