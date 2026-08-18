@@ -2,6 +2,10 @@
 
 This page will summarize (recent) changes that have been done.
 
+## 2026-08-18
+
+- Updated [Examples](./examples.md) with Cantai example and added links to Ace Studio, Synth V, Cantai websites.
+
 ## 2025-06-01
 
 - Added [How to contact me](./introduction.md#how-to-contact-me) with contact information.

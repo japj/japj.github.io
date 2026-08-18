@@ -39,12 +39,16 @@ so it is interesting to see usage of vocal synthesis for learning tracks.
 
 - [Rogier IJmker](https://rogierijmker.nl)
 
-  Here an example using ACE Studio (Vocals) and an accompaniment:
+  Here an example using vocal synthesis by [ACE Studio](https://acestudio.ai) and an accompaniment:
   <YouTubeEmbed id="jhRrtpBefrQ" />
 
-- And an example I created using Synthesizer V Studio of an arrangement by Juan M.V. Garcia:
+- And an example I created using vocal synthsis by [Synthesizer V Studio](https://dreamtonics.com/en/synthesizerv/) of an arrangement by Juan M.V. Garcia:
   <YouTubeEmbed id="7WN3as9pKnQ" />
 
+- [Dr. Bragi Thor Valsson](https://www.sheetmusicplus.com/en/arrangeme-pro?sid=8928)
+  
+  An example using Musescore with vocal synthesis by [Cantai](https://cantai.app)
+  <YouTubeEmbed id="Xy8CNM187S4" />  
 
 ## Companies
 
